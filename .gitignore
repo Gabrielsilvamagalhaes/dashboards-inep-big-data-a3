@@ -216,3 +216,6 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# INEP microdados (large local sample)
+samples/MICRODADOS_CADASTRO_CURSOS_2024*
