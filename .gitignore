@@ -219,3 +219,6 @@ __marimo__/
 
 # INEP microdados (large local sample)
 samples/MICRODADOS_CADASTRO_CURSOS_2024*
+
+# Cache Inep microdades (large local pkl)
+cache/MICRODADOS_CADASTRO_CURSOS_2024*
