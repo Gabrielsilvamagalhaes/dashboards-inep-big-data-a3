@@ -51,6 +51,8 @@ col3, col4, col5 = st.columns(3)
 df_education = df[['NU_ANO_CENSO', 'QT_INSCRITO_TOTAL_DIURNO', 'QT_INSCRITO_TOTAL_NOTURNO', 'QT_INSCRITO_TOTAL_EAD']]
 years = sorted(df_education['NU_ANO_CENSO'].dropna().astype(int).unique().tolist())
 
+total_students_registred = df['QT_INSCRITO_TOTAL'].sum()
+
 stack_df = (
     df_education
     .groupby('NU_ANO_CENSO', as_index=False)[['QT_INSCRITO_TOTAL_DIURNO', 'QT_INSCRITO_TOTAL_NOTURNO', 'QT_INSCRITO_TOTAL_EAD']]
@@ -87,6 +89,7 @@ fig = px.bar(
         "Noturno": "#ff7f0e",
         "EAD": "#2ca02c",
     },
+    text_auto=',.0f'
 )
 
 fig.update_layout(
@@ -95,6 +98,11 @@ fig.update_layout(
     xaxis_title="Ano do censo",
     legend_title="Modalidade",
 )
+
+fig.add_annotation(x='Inscritos', y=total_students_registred,
+            text=f"Total: {total_students_registred}",
+            showarrow=False,
+            yshift=10)
 
 fig.update_traces(width=0.3)
 

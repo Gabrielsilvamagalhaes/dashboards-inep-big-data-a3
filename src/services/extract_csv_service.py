@@ -1,4 +1,5 @@
 import pandas as pd
+import streamlit as st
 from urllib.parse import parse_qs, urlparse
 
 from cache.csv import get_cache_dir, get_cached_csv, save_csv_cache
@@ -61,7 +62,7 @@ def _download_drive_csv_to_cache(source_url: str) -> str:
     gdown.download(source_url, str(target_file_path), quiet=False)
     return str(target_file_path)
 
-
+@st.cache_data
 def extractCsv(path: str) -> pd.DataFrame:
     """
     Função que extratai dataframe  de csv(s).\n
@@ -89,8 +90,8 @@ def extractCsv(path: str) -> pd.DataFrame:
     displayLog('Iniciando extração do csv')
 
     for chunk in pd.read_csv(read_source, sep=';', encoding='iso-8859-1', chunksize=size, low_memory=False):
-        if total >= limitRows:
-            break
+        # if total >= limitRows:
+        #     break
 
         chunk = chunk[chunk['NO_REGIAO'].notna()]
         chunks.append(chunk)
