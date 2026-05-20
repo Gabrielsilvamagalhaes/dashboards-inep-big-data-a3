@@ -34,7 +34,17 @@ pg = st.navigation(
             title="Perfil dos Estudantes",
             url_path="students-profile",
         ),
-        st.Page("https://docs.streamlit.io", title="Streamlit Docs", icon=":material/open_in_new:"),
-    ]
+        st.Page(
+            "https://github.com/Gabrielsilvamagalhaes/dashboards-inep-big-data-a3",
+            title="GitHub",
+            icon=":material/open_in_new:",
+        ),
+        st.Page(
+            "https://colab.research.google.com/drive/1YjvgMnjOtm3wrT-GBRvv48UiZZD4rxyw?usp=sharing#scrollTo=RJi9wxUYwLzu",
+            title="Google Colab",
+            icon=":material/open_in_new:",
+        ),
+    ],
+    position="top",
 )
 pg.run()
