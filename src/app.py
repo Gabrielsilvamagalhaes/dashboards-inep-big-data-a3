@@ -6,6 +6,7 @@ import plotly.express as px
 import streamlit as st
 
 
+from pages.finance_programs_page import financialProgramsPage
 from pages.national_vision_page import nationalVisionPage
 from pages.students_profile_page import studentsProfilePage
 from services.extract_csv_service import extractCsv
@@ -34,6 +35,11 @@ pg = st.navigation(
             lambda: studentsProfilePage(df),
             title="Perfil dos Estudantes",
             url_path="students-profile",
+        ),
+        st.Page(
+            lambda: financialProgramsPage(df),
+            title="Programas de Financiamento",
+            url_path="finance-programs",
         ),
         st.Page(
             "https://github.com/Gabrielsilvamagalhaes/dashboards-inep-big-data-a3",
