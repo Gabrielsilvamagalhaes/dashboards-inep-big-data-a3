@@ -16,10 +16,6 @@ from dashboards.total_students_registred_dashboard import getTotalStudentsRegist
 
 def nationalVisionPage(df: DataFrame):
     df = df.dropna(subset=["NO_REGIAO"])
-    region = st.sidebar.selectbox("Região", df["NO_REGIAO"].unique())
-
-    df_filtered_per_region = df[df["NO_REGIAO"] == region]
-    st.dataframe(df_filtered_per_region)
 
     df_regions = df["NO_REGIAO"]
     regions = sorted(df_regions.unique())

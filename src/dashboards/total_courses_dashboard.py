@@ -1,10 +1,16 @@
+from typing import TypedDict
 from pandas import DataFrame
 import plotly.graph_objects as go
 import plotly.express as px
 from plotly.graph_objs import Figure
 
 
-def getTotalCoursesCharts(df: DataFrame) -> dict[str, Figure]:
+class CoursesCharts(TypedDict):
+    total_courses_indicator: Figure
+    total_courses_graphic: Figure
+
+
+def getTotalCoursesCharts(df: DataFrame) -> CoursesCharts:
     """Função que retorna um dicionario contendo um indicador da quantidade
     total de cursos cadastrados e um grafico dos top 20 cursos por quantidade"""
     df_education = df["NO_CINE_ROTULO"]
