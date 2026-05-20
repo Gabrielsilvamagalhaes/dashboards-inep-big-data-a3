@@ -6,10 +6,11 @@ from typing import cast
 from colorama import init
 from pandas import DataFrame
 import plotly.express as px
-import plotly.graph_objects as go
 import streamlit as st
 
+from dashboards.total_courses_dashboard import getTotalCoursesCharts
 from dashboards.total_students_finished_dashboard import getTotalStudentsFinishedChart
+from dashboards.total_students_institutions_dashboard import getTotalStudentsInstitutionsChart
 from dashboards.total_students_new_entrants_dashboard import getTotalStudentsNewEntrantsChart
 from dashboards.total_students_per_region_dashboard import (
     getTotalStudentsPerRegionChart,
@@ -82,59 +83,15 @@ total_students_new_entrants_graphic = getTotalStudentsNewEntrantsChart(df, years
 col5.plotly_chart(total_students_new_entrants_graphic)
 
 # Total de instituições
-
-df_education = df["CO_IES"]
-
-total_institutions = df_education.nunique()
-total_institutions = {"Ano": years, "Total": [total_institutions]}
-
-fig = px.bar(
-    total_institutions,
-    x="Ano",
-    y="Total",
-    title="Total de Instituições por Ano",
-    labels={"y": "Total de Instituiçoes", "x": "Ano"},
-    text_auto=",.0f",
-)
-
-fig.update_traces(marker_color="CornflowerBlue", width=0.1)
-fig.update_layout(yaxis_tickformat=",.0f")
-
-col6.plotly_chart(fig)
+total_students_institutions_graphic = getTotalStudentsInstitutionsChart(df, years)
+col6.plotly_chart(total_students_institutions_graphic)
 
 col7, col8 = st.columns([1, 3])
 
 # Total de cursos
-
-df_education = df["NO_CINE_ROTULO"]
-total_courses = df_education.count()
-
-fig_total = go.Figure(
-    go.Indicator(
-        mode="number",
-        value=total_courses,
-        number={"valueformat": ",.0f"},
-        title={"text": "Total de Cursos Cadastrados (Brasil)"},
-    )
+result = getTotalCoursesCharts(df)
+total_courses_indicator, total_courses_graphic = result.get("total_courses_indicator"), result.get(
+    "total_courses_graphic"
 )
-
-col7.plotly_chart(fig_total)
-
-
-df_count = df_education.value_counts().reset_index().head(20)
-df_count.columns = ["Curso", "Quantidade"]
-
-fig = px.bar(
-    df_count,
-    y="Curso",
-    x="Quantidade",
-    orientation="h",
-    title="Top 20 Cursos por Quantidade",
-    text_auto=",.0f",
-    color="Quantidade",
-    color_continuous_scale="Blues",
-)
-
-fig.update_layout(yaxis={"categoryorder": "total ascending"}, height=900)
-
-col8.plotly_chart(fig)
+col7.plotly_chart(total_courses_indicator)
+col8.plotly_chart(total_courses_graphic)
