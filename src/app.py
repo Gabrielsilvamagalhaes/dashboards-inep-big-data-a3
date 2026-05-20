@@ -14,6 +14,7 @@ from dashboards.total_students_per_region_dashboard import (
 )
 from dashboards.total_students_per_state_dashboard import getTotalStudentsPerStateChart
 
+from dashboards.total_students_registred_dashboard import getTotalStudentsRegistredChart
 from services.extract_csv_service import extractCsv
 
 
@@ -63,69 +64,12 @@ col2.plotly_chart(total_students_per_state_graphic)
 
 col3, col4, col5, col6 = st.columns(4)
 
-df_education = df[
-    [
-        "NU_ANO_CENSO",
-        "QT_INSCRITO_TOTAL_DIURNO",
-        "QT_INSCRITO_TOTAL_NOTURNO",
-        "QT_INSCRITO_TOTAL_EAD",
-    ]
-]
-years = sorted(df_education["NU_ANO_CENSO"].dropna().astype(int).unique().tolist())
 
-total_students_registred = df["QT_INSCRITO_TOTAL"].sum()
+years = sorted(df["NU_ANO_CENSO"].dropna().astype(int).unique().tolist())
 
-stack_df = df_education.groupby("NU_ANO_CENSO", as_index=False)[
-    ["QT_INSCRITO_TOTAL_DIURNO", "QT_INSCRITO_TOTAL_NOTURNO", "QT_INSCRITO_TOTAL_EAD"]
-].sum()
-stack_df["NU_ANO_CENSO"] = stack_df["NU_ANO_CENSO"].astype(int)
-stack_df = stack_df.rename(
-    columns={
-        "QT_INSCRITO_TOTAL_DIURNO": "Diurno",
-        "QT_INSCRITO_TOTAL_NOTURNO": "Noturno",
-        "QT_INSCRITO_TOTAL_EAD": "EAD",
-        "NU_ANO_CENSO": "Ano do Censo",
-    }
-)
-
-stack_long = stack_df.melt(id_vars="Ano do Censo", var_name="Turno", value_name="Quantidade")
-stack_long["Ano do Censo"] = stack_long["Ano do Censo"].astype(str)
-year_labels = [str(year) for year in years]
-
-fig = px.bar(
-    stack_long,
-    x="Ano do Censo",
-    y="Quantidade",
-    color="Turno",
-    title="Inscritos totais por modalidade e ano",
-    text="Quantidade",
-    category_orders={"Ano do Censo": year_labels},
-    color_discrete_map={
-        "Diurno": "#1f77b4",
-        "Noturno": "#ff7f0e",
-        "EAD": "#2ca02c",
-    },
-    text_auto=",.0f",  # pyright: ignore[reportArgumentType]
-)
-
-fig.update_layout(
-    barmode="stack",
-    yaxis_title="Quantidade de inscritos",
-    xaxis_title="Ano do censo",
-    legend_title="Modalidade",
-)
-
-fig.add_annotation(
-    x="Inscritos",
-    y=total_students_registred,
-    text=f"Total: {total_students_registred}",
-    showarrow=False,
-    yshift=10,
-)
-
-fig.update_traces(width=0.3)
-
-col3.plotly_chart(fig)
+# Total de inscritos
+total_students_registred_graphic = getTotalStudentsRegistredChart(df, years)
+col3.plotly_chart(total_students_registred_graphic)
 
 # Total Concluintes
 
