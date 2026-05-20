@@ -43,9 +43,7 @@ def _is_google_drive_url(path: str) -> bool:
 
 def _download_drive_csv_to_cache(source_url: str) -> str:
     if gdown is None:
-        raise ImportError(
-            "Pacote 'gdown' não encontrado. Instale com: pip install gdown"
-        )
+        raise ImportError("Pacote 'gdown' não encontrado. Instale com: pip install gdown")
 
     parsed_source = urlparse(source_url)
     query_params = parse_qs(parsed_source.query)
@@ -62,12 +60,13 @@ def _download_drive_csv_to_cache(source_url: str) -> str:
     gdown.download(source_url, str(target_file_path), quiet=False)
     return str(target_file_path)
 
+
 @st.cache_data
 def extractCsv(path: str) -> pd.DataFrame:
     """
     Função que extratai dataframe  de csv(s).\n
     Apenas informe o caminho do arquivo em string
-     """
+    """
     normalized_source = _normalize_csv_source(path)
 
     cached_dataframe = get_cached_csv(path)
@@ -87,24 +86,19 @@ def extractCsv(path: str) -> pd.DataFrame:
     chunks = []
     total = 0
 
-    displayLog('Iniciando extração do csv')
+    # for chunk in pd.read_csv(read_source, sep=';', encoding='iso-8859-1', chunksize=size, low_memory=False):
+    #     # if total >= limitRows:
+    #     #     break
 
-    for chunk in pd.read_csv(read_source, sep=';', encoding='iso-8859-1', chunksize=size, low_memory=False):
-        # if total >= limitRows:
-        #     break
+    #     chunk = chunk[chunk['NO_REGIAO'].notna()]
+    #     chunks.append(chunk)
+    #     total +=len(chunk)
 
-        chunk = chunk[chunk['NO_REGIAO'].notna()]
-        chunks.append(chunk)
-        total +=len(chunk)
+    displayLog("Iniciando extração do csv")
 
-        
+    df = pd.read_csv(read_source, sep=";", encoding="iso-8859-1", low_memory=False)
+    total = len(df)
 
-    displayLog(f'Total de linhas extráidas: {total}')
-    df = pd.concat(chunks).reset_index()
+    displayLog(f"Total de linhas extráidas: {total}")
     save_csv_cache(normalized_source, df)
     return df
-
-
-
-
-
