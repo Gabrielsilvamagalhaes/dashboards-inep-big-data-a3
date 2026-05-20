@@ -1,14 +1,25 @@
+import gc
+
 import pandas as pd
 import streamlit as st
 from urllib.parse import parse_qs, urlparse
 
-from cache.csv import get_cache_dir, get_cached_csv, save_csv_cache
+from cache.csv import get_cached_csv, save_csv_cache
+from services.csv_columns import (
+    get_category_columns,
+    get_integer_id_columns,
+    get_required_csv_columns,
+)
 from utils.logger import displayLog
 
 try:
     import gdown  # type: ignore[reportMissingImports]
 except ImportError:  # pragma: no cover
     gdown = None
+
+CSV_SEP = ";"
+CSV_ENCODING = "iso-8859-1"
+CHUNK_SIZE = 80_000
 
 
 def _normalize_csv_source(path: str) -> str:
@@ -42,6 +53,8 @@ def _is_google_drive_url(path: str) -> bool:
 
 
 def _download_drive_csv_to_cache(source_url: str) -> str:
+    from cache.csv import get_cache_dir
+
     if gdown is None:
         raise ImportError("Pacote 'gdown' não encontrado. Instale com: pip install gdown")
 
@@ -61,11 +74,65 @@ def _download_drive_csv_to_cache(source_url: str) -> str:
     return str(target_file_path)
 
 
-@st.cache_data
+def _resolve_usecols(source: str) -> list[str]:
+    required = set(get_required_csv_columns())
+    header = pd.read_csv(source, sep=CSV_SEP, encoding=CSV_ENCODING, nrows=0)
+    available = set(header.columns)
+    usecols = sorted(required & available)
+    missing = required - available
+
+    if missing:
+        sample = ", ".join(sorted(missing)[:8])
+        displayLog(f"Aviso: {len(missing)} colunas esperadas ausentes no CSV (ex.: {sample})")
+
+    displayLog(f"Lendo {len(usecols)} de {len(available)} colunas do CSV")
+    return usecols
+
+
+def _optimize_dataframe(df: pd.DataFrame) -> pd.DataFrame:
+    category_cols = get_category_columns()
+    id_cols = get_integer_id_columns()
+
+    for col in df.columns:
+        if col in category_cols:
+            df[col] = df[col].astype("category")
+        elif col in id_cols:
+            df[col] = pd.to_numeric(df[col], errors="coerce").astype("Int32")
+        else:
+            df[col] = pd.to_numeric(df[col], errors="coerce", downcast="integer")
+
+    return df
+
+
+def _load_csv_all_rows(source: str) -> pd.DataFrame:
+    usecols = _resolve_usecols(source)
+    displayLog("Iniciando extração do csv (todas as linhas)")
+
+    chunks: list[pd.DataFrame] = []
+    for chunk in pd.read_csv(
+        source,
+        sep=CSV_SEP,
+        encoding=CSV_ENCODING,
+        usecols=usecols,
+        chunksize=CHUNK_SIZE,
+        low_memory=False,
+    ):
+        chunks.append(chunk)
+
+    df = pd.concat(chunks, ignore_index=True)
+    del chunks
+    gc.collect()
+
+    displayLog(f"Total de linhas extraídas: {len(df)}")
+    df = _optimize_dataframe(df)
+    return df.copy()
+
+
+@st.cache_data(show_spinner="Carregando e preparando dados...")
 def extractCsv(path: str) -> pd.DataFrame:
     """
-    Função que extratai dataframe  de csv(s).\n
-    Apenas informe o caminho do arquivo em string
+    Extrai o dataframe do CSV mantendo todas as linhas.
+    Carrega apenas as colunas usadas pelos dashboards para caber na RAM do Streamlit Cloud.
     """
     normalized_source = _normalize_csv_source(path)
 
@@ -80,25 +147,6 @@ def extractCsv(path: str) -> pd.DataFrame:
     if _is_google_drive_url(normalized_source):
         read_source = _download_drive_csv_to_cache(normalized_source)
 
-    # Variavel para limitar a busca de linhas do csv, porque o tamanho é muito grande
-    limitRows = 570000
-    size = 80000
-    chunks = []
-    total = 0
-
-    # for chunk in pd.read_csv(read_source, sep=';', encoding='iso-8859-1', chunksize=size, low_memory=False):
-    #     # if total >= limitRows:
-    #     #     break
-
-    #     chunk = chunk[chunk['NO_REGIAO'].notna()]
-    #     chunks.append(chunk)
-    #     total +=len(chunk)
-
-    displayLog("Iniciando extração do csv")
-
-    df = pd.read_csv(read_source, sep=";", encoding="iso-8859-1", low_memory=False)
-    total = len(df)
-
-    displayLog(f"Total de linhas extráidas: {total}")
+    df = _load_csv_all_rows(read_source)
     save_csv_cache(normalized_source, df)
     return df

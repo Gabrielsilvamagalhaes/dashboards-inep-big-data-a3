@@ -29,27 +29,40 @@ def _build_cache_key(source: str | Path) -> str:
 
 
 def _build_cache_file_path(source: str | Path) -> Path:
-    """Função para criação do caminho do cache """
+    cache_dir = get_cache_dir()
+    cache_key = _build_cache_key(source)
+    return cache_dir / f"{cache_key}.parquet"
+
+
+def _legacy_pickle_path(source: str | Path) -> Path:
     cache_dir = get_cache_dir()
     cache_key = _build_cache_key(source)
     return cache_dir / f"{cache_key}.pkl"
 
 
 def get_cached_csv(source: str | Path) -> pd.DataFrame | None:
-    """
-        Função para buscar o cache do arquivo csv. 
-        Caso, não tenha cache, retorna None
-    """
-    cache_file_path = _build_cache_file_path(source)
-    if cache_file_path.exists():
-        displayLog(f"Carregando cache: {cache_file_path}")
-        return pd.read_pickle(cache_file_path)
+    """Busca cache em Parquet; aceita pickle legado e migra automaticamente."""
+    parquet_path = _build_cache_file_path(source)
+    if parquet_path.exists():
+        displayLog(f"Carregando cache: {parquet_path}")
+        return pd.read_parquet(parquet_path)
+
+    legacy_path = _legacy_pickle_path(source)
+    if legacy_path.exists():
+        displayLog(f"Carregando cache legado: {legacy_path}")
+        dataframe = pd.read_pickle(legacy_path)
+        save_csv_cache(source, dataframe)
+        return dataframe
 
     return None
 
 
 def save_csv_cache(source: str | Path, dataframe: pd.DataFrame) -> None:
-    """Função  para salvar o cache do arquivo csv"""
+    """Salva cache compacto em Parquet."""
     cache_file_path = _build_cache_file_path(source)
-    dataframe.to_pickle(cache_file_path)
+    dataframe.to_parquet(cache_file_path, index=False, compression="snappy")
     displayLog(f"Cache criado: {cache_file_path}")
+
+    legacy_path = _legacy_pickle_path(source)
+    if legacy_path.exists():
+        legacy_path.unlink(missing_ok=True)

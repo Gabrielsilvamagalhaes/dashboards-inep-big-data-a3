@@ -22,7 +22,6 @@ CSV_PATH = _root_url / "samples" / "MICRODADOS_CADASTRO_CURSOS_2024.csv"
 
 CSV_PATH = "https://drive.google.com/file/d/1DDt40eAzPweMlXh-Z4pg5Lp9Up85U0HL/view?usp=sharing"
 
-st.spinner(text="Carregando dados...", show_time=True, width="stretch")
 df = extractCsv(CSV_PATH)
 
 # Utilizando labmda para as funções serem chamadas apenas quando o streamlit iniciar
