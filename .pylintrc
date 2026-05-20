@@ -1,0 +1,10 @@
+[MASTER]
+init-hook=
+    import os, sys;
+    _root = os.getcwd();
+    _venv_site = os.path.join(_root, ".venv", "Lib", "site-packages");
+    _src = os.path.join(_root, "src");
+    sys.path[:0] = [p for p in (_venv_site, _src) if os.path.isdir(p)]
+
+[FORMAT]
+max-line-length=100
