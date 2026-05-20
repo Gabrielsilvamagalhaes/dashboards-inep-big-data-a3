@@ -8,6 +8,7 @@ import streamlit as st
 
 from pages.courses_analytics_page import coursesAnalyticsPage
 from pages.finance_programs_page import financialProgramsPage
+from pages.members_page import membersPage
 from pages.national_vision_page import nationalVisionPage
 from pages.students_profile_page import studentsProfilePage
 from services.extract_csv_service import extractCsv
@@ -46,6 +47,11 @@ pg = st.navigation(
             lambda: coursesAnalyticsPage(df),
             title="Análise de Cursos",
             url_path="courses-analytics",
+        ),
+        st.Page(
+            lambda: membersPage(),
+            title="Integrantes",
+            url_path="members",
         ),
         st.Page(
             "https://github.com/Gabrielsilvamagalhaes/dashboards-inep-big-data-a3",
