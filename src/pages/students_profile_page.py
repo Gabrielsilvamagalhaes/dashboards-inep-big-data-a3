@@ -1,6 +1,4 @@
 from pandas import DataFrame
-import pandas as pd
-import plotly.express as px
 import streamlit as st
 
 from dashboards.total_students_per_age_dashboard import getTotalStudentsPerAgeCharts

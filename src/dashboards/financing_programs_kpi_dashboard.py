@@ -12,8 +12,6 @@ def getFinancingKpiCharts(df: DataFrame) -> dict[str, Figure]:
         df["QT_MAT_PROUNIP"].fillna(0).sum()
     )
 
-    pct_financ = (total_mat_financ / total_mat * 100) if total_mat > 0 else 0.0
-
     fig_total = go.Figure(
         go.Indicator(
             mode="number",
