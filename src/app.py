@@ -1,15 +1,13 @@
 """Module providing a function to resolve csv path."""
 
 from pathlib import Path
-
-
 from colorama import init
-from pandas import DataFrame
 import plotly.express as px
 import streamlit as st
 
 
 from pages.national_vision_page import nationalVisionPage
+from pages.students_profile_page import studentsProfilePage
 from services.extract_csv_service import extractCsv
 
 
@@ -23,13 +21,19 @@ CSV_PATH = "https://drive.google.com/file/d/1DDt40eAzPweMlXh-Z4pg5Lp9Up85U0HL/vi
 
 df = extractCsv(CSV_PATH)
 
+# Utilizando labmda para as funções serem chamadas apenas quando o streamlit iniciar
 pg = st.navigation(
     [
         st.Page(
-            nationalVisionPage(df),
+            lambda: nationalVisionPage(df),
             title="Visão Nacional",
+            url_path="home",
         ),
-        # st.Page(page2, title="Second page", icon=":material/favorite:"),
+        st.Page(
+            lambda: studentsProfilePage(df),
+            title="Perfil dos Estudantes",
+            url_path="students-profile",
+        ),
         st.Page("https://docs.streamlit.io", title="Streamlit Docs", icon=":material/open_in_new:"),
     ]
 )
