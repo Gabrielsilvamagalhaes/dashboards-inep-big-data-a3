@@ -12,7 +12,7 @@ class CoursesCharts(TypedDict):
 
 def getTotalCoursesCharts(df: DataFrame) -> CoursesCharts:
     """Função que retorna um dicionario contendo um indicador da quantidade
-    total de cursos cadastrados e um grafico dos top 20 cursos por quantidade"""
+    total de cursos cadastrados e um grafico dos top 10 cursos por quantidade"""
     df_education = df["NO_CINE_ROTULO"]
     total_courses = df_education.count()
 
@@ -24,8 +24,9 @@ def getTotalCoursesCharts(df: DataFrame) -> CoursesCharts:
             title={"text": "Total de Cursos Cadastrados (Brasil)"},
         )
     )
+    fig_total.update_layout(separators=",.")
 
-    df_count = df_education.value_counts().reset_index().head(20)
+    df_count = df_education.value_counts().reset_index().head(10)
     df_count.columns = ["Curso", "Quantidade"]
 
     fig = px.bar(
@@ -33,8 +34,8 @@ def getTotalCoursesCharts(df: DataFrame) -> CoursesCharts:
         y="Curso",
         x="Quantidade",
         orientation="h",
-        title="Top 20 Cursos por Quantidade",
-        text_auto=",.0f",
+        title="Top 10 Cursos por Quantidade",
+        text_auto=".2s",
         color="Quantidade",
         color_continuous_scale="Blues",
     )
