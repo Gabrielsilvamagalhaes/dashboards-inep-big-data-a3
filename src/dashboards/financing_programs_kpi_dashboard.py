@@ -20,6 +20,7 @@ def getFinancingKpiCharts(df: DataFrame) -> dict[str, Figure]:
             title={"text": "Matriculados em Programas de Financiamento"},
         )
     )
+    fig_total.update_layout(separators=",.")
 
     fig_fies = go.Figure(
         go.Indicator(
@@ -29,6 +30,7 @@ def getFinancingKpiCharts(df: DataFrame) -> dict[str, Figure]:
             title={"text": "Matriculados via FIES"},
         )
     )
+    fig_fies.update_layout(separators=",.")
 
     fig_prouni = go.Figure(
         go.Indicator(
@@ -38,6 +40,7 @@ def getFinancingKpiCharts(df: DataFrame) -> dict[str, Figure]:
             title={"text": "Matriculados via PROUNI (Integral e Parcial)"},
         )
     )
+    fig_prouni.update_layout(separators=",.")
 
     return {
         "financing_total_indicator": fig_total,

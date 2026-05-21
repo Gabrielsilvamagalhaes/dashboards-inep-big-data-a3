@@ -13,37 +13,49 @@ def getCoursesAnalyticsKpiCharts(df: DataFrame) -> dict[str, Figure]:
     total_conc = float(df["QT_CONC"].fillna(0).sum())
     completion_rate = (total_conc / total_mat * 100) if total_mat > 0 else 0.0
 
+    fig_count = go.Figure(
+        go.Indicator(
+            mode="number",
+            value=distinct_courses,
+            number={"valueformat": ",.0f"},
+            title={"text": "Cursos Distintos (CINE)"},
+        )
+    )
+    fig_count.update_layout(separators=",.")
+
+    fig_mat = go.Figure(
+        go.Indicator(
+            mode="number",
+            value=total_mat,
+            number={"valueformat": ",.0f"},
+            title={"text": "Total de Matriculados"},
+        )
+    )
+    fig_mat.update_layout(separators=",.")
+
+    fig_ing = go.Figure(
+        go.Indicator(
+            mode="number",
+            value=total_ing,
+            number={"valueformat": ",.0f"},
+            title={"text": "Total de Ingressantes"},
+        )
+    )
+    fig_ing.update_layout(separators=",.")
+
+    fig_completion = go.Figure(
+        go.Indicator(
+            mode="number",
+            value=completion_rate,
+            number={"valueformat": ",.1f", "suffix": "%"},
+            title={"text": "Taxa de Conclusão Geral"},
+        )
+    )
+    fig_completion.update_layout(separators=",.")
+
     return {
-        "courses_count_indicator": go.Figure(
-            go.Indicator(
-                mode="number",
-                value=distinct_courses,
-                number={"valueformat": ",.0f"},
-                title={"text": "Cursos Distintos (CINE)"},
-            )
-        ),
-        "courses_mat_indicator": go.Figure(
-            go.Indicator(
-                mode="number",
-                value=total_mat,
-                number={"valueformat": ",.0f"},
-                title={"text": "Total de Matriculados"},
-            )
-        ),
-        "courses_ing_indicator": go.Figure(
-            go.Indicator(
-                mode="number",
-                value=total_ing,
-                number={"valueformat": ",.0f"},
-                title={"text": "Total de Ingressantes"},
-            )
-        ),
-        "courses_completion_indicator": go.Figure(
-            go.Indicator(
-                mode="number",
-                value=completion_rate,
-                number={"valueformat": ".1f", "suffix": "%"},
-                title={"text": "Taxa de Conclusão Geral"},
-            )
-        ),
+        "courses_count_indicator": fig_count,
+        "courses_mat_indicator": fig_mat,
+        "courses_ing_indicator": fig_ing,
+        "courses_completion_indicator": fig_completion,
     }
