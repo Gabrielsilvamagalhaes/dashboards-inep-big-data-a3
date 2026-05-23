@@ -12,7 +12,7 @@ O projeto simula o papel de analistas do Ministério da Educação (MEC), oferec
 |---------------------|-------------|
 | Gabriel Silva       | 1272313274  |
 | Hanspeter Dietiker  | 1272313332  |
-| Alexandre           |             |
+| Alexandre           | 12724123381 |
 
 ---
 
