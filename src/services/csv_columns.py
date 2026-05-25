@@ -52,6 +52,9 @@ _STATIC_COLUMNS = frozenset(
         "QT_CONC_AMARELA",
         "QT_CONC_INDIGENA",
         "QT_CONC_CORND",
+        "QT_ING_DEFICIENTE",
+        "QT_MAT_DEFICIENTE",
+        "QT_CONC_DEFICIENTE",
     }
 )
 
