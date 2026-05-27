@@ -67,9 +67,7 @@ def financialProgramsPage(df: DataFrame):
     with col3:
         st.plotly_chart(stage_charts["financing_programs_by_stage"])
     with col4:
-        st.plotly_chart(stage_charts["financing_fies_prouni_comparison"])
-
-    st.plotly_chart(getFinancingReembolsavelByStageChart(df_filtered))
+        st.plotly_chart(getFinancingReembolsavelByStageChart(df_filtered))
 
     col5, col6 = st.columns(2)
     with col5:

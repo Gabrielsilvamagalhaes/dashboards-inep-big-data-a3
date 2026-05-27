@@ -15,7 +15,6 @@ from dashboards.financing_programs_constants import (
 
 class FinancingByStageCharts(TypedDict):
     financing_programs_by_stage: Figure
-    financing_fies_prouni_comparison: Figure
 
 
 def _build_stage_table(df: DataFrame) -> pd.DataFrame:
@@ -54,24 +53,6 @@ def getFinancingProgramsByStageCharts(df: DataFrame) -> FinancingByStageCharts:
         legend_title="Programa",
     )
 
-    fies_prouni = table[table["Programa"].isin(["FIES", "PROUNI Integral", "PROUNI Parcial"])]
-    fig_fies_prouni = px.bar(
-        fies_prouni,
-        x="Etapa",
-        y="Quantidade",
-        color="Programa",
-        barmode="group",
-        title="FIES e PROUNI por Etapa (2024)",
-        color_discrete_map=PROGRAM_COLORS,
-        text_auto=".2s",
-    )
-    fig_fies_prouni.update_layout(
-        xaxis_title="Etapa",
-        yaxis_title="Quantidade de estudantes",
-        legend_title="Programa",
-    )
-
     return {
         "financing_programs_by_stage": fig_programs,
-        "financing_fies_prouni_comparison": fig_fies_prouni,
     }
