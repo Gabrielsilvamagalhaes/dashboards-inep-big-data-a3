@@ -18,7 +18,6 @@ from dashboards.courses_demand_by_area_dashboard import (
     getCoursesCompletionByAreaChart,
     getCoursesDemandByAreaChart,
 )
-from dashboards.courses_demand_by_stage_dashboard import getCoursesDemandByStageChart
 from dashboards.courses_top_entrants_dashboard import getCoursesTopEntrantsChart
 from dashboards.courses_top_matriculations_dashboard import getCoursesTopMatriculationsChart
 
@@ -69,9 +68,7 @@ def coursesAnalyticsPage(df: DataFrame):
     df_filtered = _apply_modality_filter(df_filtered, modality_key)
 
     kpi = getCoursesAnalyticsKpiCharts(df_filtered)
-    col_k1, col_k2, col_k3, col_k4 = st.columns(4)
-    with col_k1:
-        st.plotly_chart(kpi["courses_count_indicator"])
+    col_k2, col_k3, col_k4 = st.columns(3)
     with col_k2:
         st.plotly_chart(kpi["courses_mat_indicator"])
     with col_k3:
@@ -94,8 +91,6 @@ def coursesAnalyticsPage(df: DataFrame):
         st.plotly_chart(
             getCoursesCompletionRateChart(df_filtered, top_n, min_enrollment, ranking="lowest")
         )
-
-    st.plotly_chart(getCoursesDemandByStageChart(df_filtered, top_n=min(15, top_n)))
 
     col5, col6 = st.columns(2)
     with col5:
