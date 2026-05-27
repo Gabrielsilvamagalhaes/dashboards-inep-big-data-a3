@@ -13,7 +13,7 @@ _MEMBERS = [
         "github": "https://github.com/hanspeterdietiker",
         "linkedin": "https://www.linkedin.com/in/hanspeterdietiker/",
     },
-    {"name": "Alexandre"},
+    {"name": "Alexandre", "ra": "12724123381"},
 ]
 
 _PAGE_CSS = """

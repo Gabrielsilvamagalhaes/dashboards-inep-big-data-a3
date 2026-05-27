@@ -4,6 +4,8 @@ Dashboard interativo de **análise de dados e Big Data** sobre o ensino superior
 
 O projeto simula o papel de analistas do Ministério da Educação (MEC), oferecendo indicadores táticos e estratégicos para apoiar a tomada de decisão por gestores públicos, universidades e instituições de ensino.
 
+**Deploy (Streamlit Cloud):** [https://big-data-a3-inep-fmvqeiqi4rvnq6ktebbsvb.streamlit.app](https://big-data-a3-inep-fmvqeiqi4rvnq6ktebbsvb.streamlit.app)
+
 ---
 
 ## Integrantes
@@ -154,6 +156,7 @@ big-data-a3/
 
 ## Links úteis
 
+- **Deploy (Streamlit Cloud):** [big-data-a3-inep](https://big-data-a3-inep-fmvqeiqi4rvnq6ktebbsvb.streamlit.app)
 - **Repositório GitHub:** [dashboards-inep-big-data-a3](https://github.com/Gabrielsilvamagalhaes/dashboards-inep-big-data-a3)
 - **Notebook (Google Colab):** [Análise no Colab](https://colab.research.google.com/drive/1YjvgMnjOtm3wrT-GBRvv48UiZZD4rxyw?usp=sharing)
 
