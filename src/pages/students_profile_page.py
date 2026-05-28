@@ -5,7 +5,6 @@ import streamlit as st
 from dashboards.total_students_per_age_dashboard import getTotalStudentsPerAgeCharts
 from dashboards.total_students_per_gender_dashboard import getTotalStudentsPerGenderCharts
 from dashboards.total_students_per_race_dashboard import (
-    getStudentsDistributionByRaceChart,
     getStudentsComparisonByRaceChart,
 )
 
@@ -37,10 +36,8 @@ def studentsProfilePage(df: DataFrame):
     with st.container(width="stretch"):
         st.plotly_chart(fig_comp_age)
 
-    fig_raca_dist = getStudentsDistributionByRaceChart(df)
     fig_raca_comp = getStudentsComparisonByRaceChart(df)
-    with st.container(width="stretch"):
-        st.plotly_chart(fig_raca_dist)
+
     with st.container(width="stretch"):
         st.plotly_chart(fig_raca_comp)
 

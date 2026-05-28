@@ -4,47 +4,6 @@ from plotly.graph_objs import Figure
 import plotly.express as px
 
 
-def getStudentsDistributionByRaceChart(df: DataFrame) -> Figure:
-    """Função que retorna o gráfico de distribuição de alunos matriculados por raça/cor"""
-
-    nomes_raca = ["Branca", "Preta", "Parda", "Amarela", "Indígena", "Não Declarada"]
-    cols_mat = [
-        "QT_MAT_BRANCA",
-        "QT_MAT_PRETA",
-        "QT_MAT_PARDA",
-        "QT_MAT_AMARELA",
-        "QT_MAT_INDIGENA",
-        "QT_MAT_CORND",
-    ]
-
-    linhas = []
-    for raca, col_mat in zip(nomes_raca, cols_mat):
-        total_mat = df[col_mat].sum()
-        linhas.append([raca, total_mat])
-
-    tabela_mat = pd.DataFrame(linhas, columns=["Raça/Cor", "Quantidade"])
-
-    fig = px.bar(
-        tabela_mat,
-        x="Quantidade",
-        y="Raça/Cor",
-        orientation="h",
-        color="Raça/Cor",
-        title="Perfil dos Estudantes — Distribuição dos Matriculados por Raça/Cor",
-        text_auto=",.0f",
-    )
-
-    fig.update_layout(
-        template="plotly_dark",
-        title_x=0.5,
-        yaxis={"categoryorder": "array", "categoryarray": nomes_raca[::-1]},
-        height=650,
-        separators=",.",
-    )
-
-    return fig
-
-
 def getStudentsComparisonByRaceChart(df: DataFrame) -> Figure:
     """Função que retorna o gráfico comparativo de estudantes por raça/cor (Ingresso × Matrícula × Conclusão)"""
 
