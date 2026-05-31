@@ -9,15 +9,15 @@ def getTotalStudentsDonutChart(df: DataFrame) -> Figure:
 
     df_education = df
 
-    total_inscritos = df_education["QT_INSCRITO_TOTAL"].sum()
     total_ingressantes = df_education["QT_ING"].sum()
     total_matriculados = df_education["QT_MAT"].sum()
     total_concluintes = df_education["QT_CONC"].sum()
 
+    total_veteranos = max(total_matriculados - total_ingressantes, 0)
+
     linhas_da_tabela = [
-        ["Inscritos", total_inscritos],
-        ["Novatos", total_ingressantes],
-        ["Veteranos", total_matriculados],
+        ["Calouros", total_ingressantes],
+        ["Veteranos", total_veteranos],
         ["Formandos", total_concluintes],
     ]
 
@@ -31,8 +31,7 @@ def getTotalStudentsDonutChart(df: DataFrame) -> Figure:
         hole=0.4,
         color="Etapa",
         color_discrete_map={
-            "Inscritos": "#2C5E8A",
-            "Novatos": "#3A8D7C",
+            "Calouros": "#3A8D7C",
             "Veteranos": "#88398A",
             "Formandos": "#C7822D",
         },

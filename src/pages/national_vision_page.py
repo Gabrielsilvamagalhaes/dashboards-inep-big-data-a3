@@ -8,7 +8,7 @@ from dashboards.total_students_per_region_dashboard import (
     getTotalStudentsPerRegionChart,
 )
 from dashboards.total_students_per_state_dashboard import getTotalStudentsPerStateChart
-from dashboards.total_students_workflow_donut_dashboard import getTotalStudentsDonutChart
+from dashboards.total_students_donut_dashboard import getTotalStudentsDonutChart
 
 
 def nationalVisionPage(df: DataFrame):
@@ -26,6 +26,7 @@ def nationalVisionPage(df: DataFrame):
     select_regions = st.multiselect(
         "Filtrar por regiões", regions, default=regions, label_visibility="hidden"
     )
+    df_filtered_by_region = df[df["NO_REGIAO"].isin(select_regions)]
 
     col1, col2 = st.columns(2)
 
@@ -51,7 +52,7 @@ def nationalVisionPage(df: DataFrame):
         total_students_workflow_donut = getTotalStudentsDonutChart(df)
         st.plotly_chart(total_students_workflow_donut)
 
-    result = getTotalCoursesCharts(df)
+    result = getTotalCoursesCharts(cast(DataFrame, df_filtered_by_region))
     total_courses_indicator, total_courses_graphic = result.get(
         "total_courses_indicator"
     ), result.get("total_courses_graphic")
