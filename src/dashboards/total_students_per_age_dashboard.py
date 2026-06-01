@@ -78,16 +78,6 @@ def getTotalStudentsPerAgeCharts(df: DataFrame) -> AgeCharts:
         yaxis={"categoryorder": "array", "categoryarray": nomes_faixas[::-1]}
     )
 
-    fig_comparativo = px.bar(
-        tabela_idades,
-        x="Faixa Etária",
-        y="Quantidade",
-        color="Etapa",
-        barmode="group",
-        title="Evolução dos Alunos por Faixa Etária (Ingresso x Matrícula x Conclusão)",
-    )
-
     return {
-        "evolution_students_per_age": fig_comparativo,
         "total_students_per_age": fig_distribuicao,
     }
