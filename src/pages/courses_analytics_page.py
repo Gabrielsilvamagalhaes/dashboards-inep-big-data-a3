@@ -12,11 +12,6 @@ from dashboards.courses_analytics_constants import (
 from dashboards.courses_analytics_kpi_dashboard import getCoursesAnalyticsKpiCharts
 from dashboards.courses_completion_rate_dashboard import (
     getCoursesCompletionRateChart,
-    getCoursesCompletionScatterChart,
-)
-from dashboards.courses_demand_by_area_dashboard import (
-    getCoursesCompletionByAreaChart,
-    getCoursesDemandByAreaChart,
 )
 from dashboards.courses_top_entrants_dashboard import getCoursesTopEntrantsChart
 from dashboards.courses_top_matriculations_dashboard import getCoursesTopMatriculationsChart
@@ -82,20 +77,19 @@ def coursesAnalyticsPage(df: DataFrame):
     with col2:
         st.plotly_chart(getCoursesTopEntrantsChart(df_filtered, top_n))
 
+    completion_top_n = min(top_n, 10)
     col3, col4 = st.columns(2)
     with col3:
         st.plotly_chart(
-            getCoursesCompletionRateChart(df_filtered, top_n, min_enrollment, ranking="highest")
+            getCoursesCompletionRateChart(
+                df_filtered, completion_top_n, min_enrollment, ranking="highest"
+            ),
+            use_container_width=True,
         )
     with col4:
         st.plotly_chart(
-            getCoursesCompletionRateChart(df_filtered, top_n, min_enrollment, ranking="lowest")
+            getCoursesCompletionRateChart(
+                df_filtered, completion_top_n, min_enrollment, ranking="lowest"
+            ),
+            use_container_width=True,
         )
-
-    col5, col6 = st.columns(2)
-    with col5:
-        st.plotly_chart(getCoursesDemandByAreaChart(df_filtered))
-    with col6:
-        st.plotly_chart(getCoursesCompletionByAreaChart(df_filtered))
-
-    st.plotly_chart(getCoursesCompletionScatterChart(df_filtered, min_enrollment))
