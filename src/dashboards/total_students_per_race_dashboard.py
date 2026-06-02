@@ -40,9 +40,11 @@ def getStudentsComparisonByRaceChart(df: DataFrame) -> Figure:
         total_mat = df[col_mat].sum()
         total_conc = df[col_conc].sum()
 
-        linhas.append([raca, "1. Ingressantes", total_ing])
-        linhas.append([raca, "2. Matriculados", total_mat])
-        linhas.append([raca, "3. Concluintes", total_conc])
+        total_veteranos = max(total_mat - total_ing, 0)
+
+        linhas.append([raca, "1. Calouros", total_ing])
+        linhas.append([raca, "2. Veteranos", total_veteranos])
+        linhas.append([raca, "3. Formandos", total_conc])
 
     tabela_raca = pd.DataFrame(linhas, columns=["Raça/Cor", "Etapa", "Quantidade"])
 
@@ -52,7 +54,7 @@ def getStudentsComparisonByRaceChart(df: DataFrame) -> Figure:
         y="Quantidade",
         color="Etapa",
         barmode="group",
-        title="Perfil dos Estudantes por Raça/Cor (Ingresso × Matrícula × Conclusão)",
+        title="Perfil dos Estudantes por Raça/Cor (Calouros × Veteranos × Formandos)",
         text_auto=",.0f",
     )
 

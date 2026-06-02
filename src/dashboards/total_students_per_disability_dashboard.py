@@ -31,10 +31,12 @@ def getStudentsComparisonByDisabilityChart(df: DataFrame) -> Figure:
     total_mat = df["QT_MAT_DEFICIENTE"].sum()
     total_conc = df["QT_CONC_DEFICIENTE"].sum()
 
+    total_veteranos = max(total_mat - total_ing, 0)
+
     linhas = [
-        ["1. Ingressantes", total_ing],
-        ["2. Matriculados", total_mat],
-        ["3. Concluintes", total_conc],
+        ["1. Calouros", total_ing],
+        ["2. Veteranos", total_veteranos],
+        ["3. Formandos", total_conc],
     ]
 
     tabela_def = pd.DataFrame(linhas, columns=["Etapa", "Quantidade"])
@@ -44,7 +46,7 @@ def getStudentsComparisonByDisabilityChart(df: DataFrame) -> Figure:
         x="Etapa",
         y="Quantidade",
         color="Etapa",
-        title="Perfil dos Estudantes com Deficiência (Ingresso × Matrícula × Conclusão)",
+        title="Perfil dos Estudantes com Deficiência (Calouros × Veteranos × Formandos)",
         text_auto=",.0f",
     )
 
