@@ -105,7 +105,6 @@ def _optimize_dataframe(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def _load_csv_all_rows(source: str) -> pd.DataFrame:
-    usecols = _resolve_usecols(source)
     displayLog("Iniciando extração do csv (todas as linhas)")
 
     chunks: list[pd.DataFrame] = []
@@ -113,7 +112,6 @@ def _load_csv_all_rows(source: str) -> pd.DataFrame:
         source,
         sep=CSV_SEP,
         encoding=CSV_ENCODING,
-        usecols=usecols,
         chunksize=CHUNK_SIZE,
         low_memory=False,
     ):
@@ -124,8 +122,7 @@ def _load_csv_all_rows(source: str) -> pd.DataFrame:
     gc.collect()
 
     displayLog(f"Total de linhas extraídas: {len(df)}")
-    df = _optimize_dataframe(df)
-    return df.copy()
+    return df
 
 
 @st.cache_data(show_spinner="Carregando e preparando dados...")

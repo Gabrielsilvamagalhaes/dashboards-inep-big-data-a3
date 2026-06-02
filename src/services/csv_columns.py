@@ -11,6 +11,7 @@ _AGE_SUFFIXES = ("0_17", "18_24", "25_29", "35_39", "40_49", "50_59", "60_MAIS")
 _STATIC_COLUMNS = frozenset(
     {
         "NO_REGIAO",
+        "NO_CURSO",
         "NO_UF",
         "NU_ANO_CENSO",
         "NO_CINE_ROTULO",
