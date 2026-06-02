@@ -14,6 +14,8 @@ from dashboards.total_students_donut_dashboard import getTotalStudentsDonutChart
 def nationalVisionPage(df: DataFrame):
     df = df.dropna(subset=["NO_REGIAO"])
 
+    st.dataframe(df)
+
     df_regions = df["NO_REGIAO"]
     regions = sorted(df_regions.unique())
 

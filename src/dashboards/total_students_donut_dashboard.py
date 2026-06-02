@@ -3,6 +3,8 @@ import plotly.express as px
 import pandas as pd
 from plotly.graph_objs import Figure
 
+from services.calculate_veterans import calculateVeterans
+
 
 def getTotalStudentsDonutChart(df: DataFrame) -> Figure:
     """Função que retorna um donut do fluxo total de estudantes no ensino superior"""
@@ -13,7 +15,7 @@ def getTotalStudentsDonutChart(df: DataFrame) -> Figure:
     total_matriculados = df_education["QT_MAT"].sum()
     total_concluintes = df_education["QT_CONC"].sum()
 
-    total_veteranos = max(total_matriculados - total_ingressantes, 0)
+    total_veteranos = calculateVeterans(total_matriculados, total_ingressantes)
 
     linhas_da_tabela = [
         ["Calouros", total_ingressantes],

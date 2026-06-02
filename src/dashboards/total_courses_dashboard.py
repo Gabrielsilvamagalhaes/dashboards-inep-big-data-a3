@@ -13,8 +13,8 @@ class CoursesCharts(TypedDict):
 def getTotalCoursesCharts(df: DataFrame) -> CoursesCharts:
     """Função que retorna um dicionario contendo um indicador da quantidade
     total de cursos cadastrados e um grafico dos top 10 cursos por quantidade"""
-    df_education = df["NO_CINE_ROTULO"]
-    total_courses = df_education.count()
+    df_education = df["NO_CURSO"]
+    total_courses = len(df_education.unique())
 
     fig_total = go.Figure(
         go.Indicator(

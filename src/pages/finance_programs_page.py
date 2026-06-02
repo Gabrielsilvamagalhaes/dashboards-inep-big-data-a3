@@ -5,14 +5,12 @@ import streamlit as st
 
 from dashboards.financing_programs_by_region_dashboard import (
     getFinancingProgramsByRegionChart,
-    getFinancingTotalByRegionChart,
 )
 from dashboards.financing_programs_by_stage_dashboard import getFinancingProgramsByStageCharts
 from dashboards.financing_programs_constants import STAGE_LABEL, FinancingStage
 from dashboards.financing_programs_kpi_dashboard import getFinancingKpiCharts
 from dashboards.financing_programs_share_dashboard import getFinancingProgramsShareChart
 from dashboards.financing_reembolsavel_dashboard import (
-    getFinancingReembolsavelByStageChart,
     getFinancingReembolsavelChart,
 )
 
@@ -56,21 +54,15 @@ def financialProgramsPage(df: DataFrame):
     )
     stage = stage_options[stage_labels.index(selected_label)]
 
-    col1, col2 = st.columns(2)
-    with col1:
-        st.plotly_chart(getFinancingProgramsShareChart(df_filtered, stage))
-    with col2:
-        st.plotly_chart(getFinancingReembolsavelChart(df_filtered, stage))
+    # col1, col2 = st.columns(2)
+    st.plotly_chart(getFinancingProgramsShareChart(df_filtered, stage))
 
     stage_charts = getFinancingProgramsByStageCharts(df_filtered)
-    col3, col4 = st.columns([2, 1])
+
+    col3, col4 = st.columns(2)
+
     with col3:
         st.plotly_chart(stage_charts["financing_programs_by_stage"])
-    with col4:
-        st.plotly_chart(getFinancingReembolsavelByStageChart(df_filtered))
 
-    col5, col6 = st.columns(2)
-    with col5:
+    with col4:
         st.plotly_chart(getFinancingProgramsByRegionChart(df_filtered, select_regions))
-    with col6:
-        st.plotly_chart(getFinancingTotalByRegionChart(df_filtered, select_regions))

@@ -39,33 +39,3 @@ def getFinancingReembolsavelChart(df: DataFrame, stage: FinancingStage) -> Figur
     )
     fig.update_traces(textposition="inside", textinfo="percent+label")
     return fig
-
-
-def getFinancingReembolsavelByStageChart(df: DataFrame) -> Figure:
-    """Comparativo reembolsável x não reembolsável nas três etapas."""
-    rows = []
-    for stage in ("ingressantes", "matriculados", "concluintes"):
-        prefix = STAGE_PREFIX[stage]
-        stage_label = STAGE_LABEL[stage]
-        rows.append([stage_label, "Reembolsável", float(df[f"{prefix}_FINANC_REEMB"].fillna(0).sum())])
-        rows.append(
-            [stage_label, "Não Reembolsável", float(df[f"{prefix}_FINANC_NREEMB"].fillna(0).sum())]
-        )
-    table = pd.DataFrame(rows, columns=["Etapa", "Tipo", "Quantidade"])
-
-    fig = px.bar(
-        table,
-        x="Etapa",
-        y="Quantidade",
-        color="Tipo",
-        barmode="group",
-        title="Reembolsável x Não Reembolsável por Etapa (2024)",
-        color_discrete_map=PROGRAM_COLORS,
-        text_auto=".2s",
-    )
-    fig.update_layout(
-        xaxis_title="Etapa",
-        yaxis_title="Quantidade de estudantes",
-        legend_title="Tipo de financiamento",
-    )
-    return fig

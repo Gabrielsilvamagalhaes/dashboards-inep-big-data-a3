@@ -46,31 +46,31 @@ def getFinancingProgramsByRegionChart(
     return fig
 
 
-def getFinancingTotalByRegionChart(
-    df: DataFrame, select_regions: list[str], stage_prefix: str = "QT_MAT"
-) -> Figure:
-    """Total de estudantes em programas de financiamento por região."""
-    col_total = f"{stage_prefix}_FINANC"
-    df_filtered = df[df["NO_REGIAO"].isin(select_regions)]
+# def getFinancingTotalByRegionChart(
+#     df: DataFrame, select_regions: list[str], stage_prefix: str = "QT_MAT"
+# ) -> Figure:
+#     """Total de estudantes em programas de financiamento por região."""
+#     col_total = f"{stage_prefix}_FINANC"
+#     df_filtered = df[df["NO_REGIAO"].isin(select_regions)]
 
-    by_region = (
-        df_filtered.groupby("NO_REGIAO", as_index=False)[col_total]
-        .sum()
-        .rename(columns={"NO_REGIAO": "Região", col_total: "Quantidade"})
-    )
+#     by_region = (
+#         df_filtered.groupby("NO_REGIAO", as_index=False)[col_total]
+#         .sum()
+#         .rename(columns={"NO_REGIAO": "Região", col_total: "Quantidade"})
+#     )
 
-    fig = px.bar(
-        by_region,
-        x="Região",
-        y="Quantidade",
-        title="Total em Programas de Financiamento por Região — Matriculados (2024)",
-        color="Quantidade",
-        color_continuous_scale="Blues",
-        text_auto=".2s",
-    )
-    fig.update_layout(
-        xaxis_title="Região",
-        yaxis_title="Quantidade de estudantes",
-        showlegend=False,
-    )
-    return fig
+#     fig = px.bar(
+#         by_region,
+#         x="Região",
+#         y="Quantidade",
+#         title="Total em Programas de Financiamento por Região — Matriculados (2024)",
+#         color="Quantidade",
+#         color_continuous_scale="Blues",
+#         text_auto=".2s",
+#     )
+#     fig.update_layout(
+#         xaxis_title="Região",
+#         yaxis_title="Quantidade de estudantes",
+#         showlegend=False,
+#     )
+#     return fig

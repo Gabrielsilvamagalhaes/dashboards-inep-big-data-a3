@@ -11,9 +11,9 @@ STAGE_PREFIX: dict[FinancingStage, str] = {
 }
 
 STAGE_LABEL: dict[FinancingStage, str] = {
-    "ingressantes": "Ingressantes",
-    "matriculados": "Matriculados",
-    "concluintes": "Concluintes",
+    "ingressantes": "Calouros",
+    "matriculados": "Veteranos",
+    "concluintes": "Formandos",
 }
 
 # (rótulo exibição, sufixo da coluna sem prefixo QT_ING/MAT/CONC)
