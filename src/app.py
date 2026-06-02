@@ -20,7 +20,7 @@ st.set_page_config(layout="wide")  # Para ocupar todo o espaço horizontal da pa
 _root_url = Path(__file__).resolve().parent.parent
 CSV_PATH = _root_url / "samples" / "MICRODADOS_CADASTRO_CURSOS_2024.csv"
 
-CSV_PATH = "https://drive.google.com/file/d/1DDt40eAzPweMlXh-Z4pg5Lp9Up85U0HL/view?usp=sharing"
+CSV_PATH = "https://drive.google.com/file/d/1P9Hehhe8mh2cE44AYw081M_Fhp0DPWYX/view?usp=sharing"
 
 df = extractCsv(CSV_PATH)
 
