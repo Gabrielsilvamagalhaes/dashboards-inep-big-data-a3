@@ -1,8 +1,14 @@
-"""Module providing a function to resolve csv path."""
+"""Entrada da aplicação Streamlit (A3).
+
+Responsável por:
+- configurar o layout;
+- aplicar tema dark consistente;
+- carregar o CSV;
+- montar a navegação de páginas.
+"""
 
 from pathlib import Path
 from colorama import init
-import plotly.express as px
 import streamlit as st
 
 
@@ -12,10 +18,18 @@ from pages.members_page import membersPage
 from pages.national_vision_page import nationalVisionPage
 from pages.students_profile_page import studentsProfilePage
 from services.extract_csv_service import extractCsv
+from components.ui_helpers import apply_dark_theme
 
 
 init(autoreset=True)  # Função para inicializar a lib colorama
-st.set_page_config(layout="wide")  # Para ocupar todo o espaço horizontal da pagina
+st.set_page_config(
+    page_title="Dashboard INEP — Ensino Superior (A3)",
+    layout="wide",  # Para ocupar todo o espaço horizontal da página
+    page_icon=":bar_chart:",
+)
+
+# Tema visual deve ser aplicado cedo, antes das páginas renderizarem conteúdo.
+apply_dark_theme()
 
 _root_url = Path(__file__).resolve().parent.parent
 CSV_PATH = _root_url / "samples" / "MICRODADOS_CADASTRO_CURSOS_2024.csv"

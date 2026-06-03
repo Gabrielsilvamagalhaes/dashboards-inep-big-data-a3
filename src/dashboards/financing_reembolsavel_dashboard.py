@@ -4,7 +4,6 @@ import plotly.express as px
 import pandas as pd
 
 from dashboards.financing_programs_constants import (
-    PROGRAM_COLORS,
     STAGE_LABEL,
     STAGE_PREFIX,
     FinancingStage,
@@ -29,13 +28,20 @@ def getFinancingReembolsavelChart(df: DataFrame, stage: FinancingStage) -> Figur
     table = _reembolsavel_table(df, stage)
     stage_label = STAGE_LABEL[stage]
 
+    # Mapeamento específico para as duas categorias usadas no pie ("Tipo").
+    # (Evita depender de um dicionário com chaves de programas diferentes.)
+    type_colors = {
+        "Reembolsável": "#2C5E8A",
+        "Não Reembolsável": "#88398A",
+    }
+
     fig = px.pie(
         table,
         names="Tipo",
         values="Quantidade",
         color="Tipo",
         title=f"Financiamento Reembolsável x Não Reembolsável — {stage_label} (2024)",
-        color_discrete_map=PROGRAM_COLORS,
+        color_discrete_map=type_colors,
     )
     fig.update_traces(textposition="inside", textinfo="percent+label")
     return fig

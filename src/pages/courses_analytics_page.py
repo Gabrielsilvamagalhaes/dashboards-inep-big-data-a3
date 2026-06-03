@@ -3,6 +3,8 @@ from typing import cast
 from pandas import DataFrame
 import streamlit as st
 
+from components.ui_helpers import apply_plotly_dark, render_page_header
+
 from dashboards.courses_analytics_constants import (
     AREA_COLUMN,
     MODALITY_LABELS,
@@ -26,6 +28,19 @@ def _apply_modality_filter(df: DataFrame, modality_key: str) -> DataFrame:
 
 def coursesAnalyticsPage(df: DataFrame):
     df = df.dropna(subset=["NO_CINE_ROTULO"])
+
+    render_page_header("Análise de Cursos", "Demanda, ingressantes e taxa de conclusão com filtros por área/modalidade e região.")
+
+    # Filtro por região (mantido no mesmo estilo das demais páginas).
+    regions = sorted(df["NO_REGIAO"].dropna().unique()) if "NO_REGIAO" in df.columns else []
+    select_regions = st.multiselect(
+        "Filtrar por regiões",
+        regions,
+        default=regions,
+        label_visibility="hidden",
+    )
+
+    df = cast(DataFrame, df[df["NO_REGIAO"].isin(select_regions)]) if select_regions else df
 
     areas = sorted(df[AREA_COLUMN].dropna().unique()) if AREA_COLUMN in df.columns else []
     st.markdown(
@@ -54,7 +69,13 @@ def coursesAnalyticsPage(df: DataFrame):
     )
     modality_key = next(k for k, v in modality_options.items() if v == modality_label)
 
-    top_n = TOP_N_DEFAULT
+    top_n = st.slider(
+        "Top N cursos (para gráficos de ranking)",
+        min_value=5,
+        max_value=50,
+        value=int(TOP_N_DEFAULT),
+        step=5,
+    )
     min_enrollment = MIN_ENROLLMENT_FOR_RATE
 
     df_filtered = df
@@ -65,31 +86,41 @@ def coursesAnalyticsPage(df: DataFrame):
     kpi = getCoursesAnalyticsKpiCharts(df_filtered)
     col_k2, col_k3, col_k4 = st.columns(3)
     with col_k2:
-        st.plotly_chart(kpi["courses_mat_indicator"])
+        st.plotly_chart(apply_plotly_dark(kpi["courses_mat_indicator"]), use_container_width=True)
     with col_k3:
-        st.plotly_chart(kpi["courses_ing_indicator"])
+        st.plotly_chart(apply_plotly_dark(kpi["courses_ing_indicator"]), use_container_width=True)
     with col_k4:
-        st.plotly_chart(kpi["courses_completion_indicator"])
+        st.plotly_chart(apply_plotly_dark(kpi["courses_completion_indicator"]), use_container_width=True)
 
     col1, col2 = st.columns(2)
     with col1:
-        st.plotly_chart(getCoursesTopMatriculationsChart(df_filtered, top_n))
+        st.plotly_chart(
+            apply_plotly_dark(getCoursesTopMatriculationsChart(df_filtered, top_n)),
+            use_container_width=True,
+        )
     with col2:
-        st.plotly_chart(getCoursesTopEntrantsChart(df_filtered, top_n))
+        st.plotly_chart(
+            apply_plotly_dark(getCoursesTopEntrantsChart(df_filtered, top_n)),
+            use_container_width=True,
+        )
 
     completion_top_n = min(top_n, 10)
     col3, col4 = st.columns(2)
     with col3:
         st.plotly_chart(
-            getCoursesCompletionRateChart(
-                df_filtered, completion_top_n, min_enrollment, ranking="highest"
+            apply_plotly_dark(
+                getCoursesCompletionRateChart(
+                    df_filtered, completion_top_n, min_enrollment, ranking="highest"
+                )
             ),
             use_container_width=True,
         )
     with col4:
         st.plotly_chart(
-            getCoursesCompletionRateChart(
-                df_filtered, completion_top_n, min_enrollment, ranking="lowest"
+            apply_plotly_dark(
+                getCoursesCompletionRateChart(
+                    df_filtered, completion_top_n, min_enrollment, ranking="lowest"
+                )
             ),
             use_container_width=True,
         )

@@ -3,30 +3,53 @@ from plotly.graph_objs import Figure
 import plotly.express as px
 import pandas as pd
 
-from dashboards.financing_programs_constants import PROGRAM_COLORS
+from dashboards.financing_programs_constants import (
+    FINANCING_PROGRAM_EXTRA,
+    FINANCING_PROGRAMS,
+    PROGRAM_COLORS,
+    STAGE_LABEL,
+    STAGE_PREFIX,
+)
 
 
 def getFinancingProgramsByRegionChart(
     df: DataFrame, select_regions: list[str], stage_prefix: str = "QT_MAT"
 ) -> Figure:
-    """Distribuição regional dos principais programas (matriculados por padrão)."""
-    df_filtered = df[df["NO_REGIAO"].isin(select_regions)]
+    """
+    Distribuição regional dos programas de financiamento (por etapa).
 
-    programs = [
-        ("FIES", f"{stage_prefix}_FIES"),
-        ("PROUNI Integral", f"{stage_prefix}_PROUNII"),
-        ("PROUNI Parcial", f"{stage_prefix}_PROUNIP"),
-    ]
+    A lógica de agregação de "Outros ..." deve ser consistente com o gráfico de share
+    (pie) da página de Programas de Financiamento.
+    """
+
+    # Deduz o nome da etapa a partir do prefixo (QT_ING, QT_MAT, QT_CONC).
+    stage = next((s for s, p in STAGE_PREFIX.items() if p == stage_prefix), None)
+    stage_label = STAGE_LABEL.get(stage, "Matriculados")
+    df_filtered = df[df["NO_REGIAO"].isin(select_regions)]
 
     rows = []
     for region in select_regions:
         region_df = df_filtered[df_filtered["NO_REGIAO"] == region]
-        for label, col in programs:
-            if col not in region_df.columns:
-                continue
-            rows.append([region, label, float(region_df[col].fillna(0).sum())])
+
+        for program_label, program_suffix in FINANCING_PROGRAMS:
+            base_col = f"{stage_prefix}_{program_suffix}"
+            qty = float(region_df[base_col].fillna(0).sum()) if base_col in region_df.columns else 0.0
+
+            # Agrega colunas extras para os "Outros ...", mantendo a mesma coerência do share.
+            for extra_suffix in FINANCING_PROGRAM_EXTRA.get(program_label, []):
+                extra_col = f"{stage_prefix}_{extra_suffix}"
+                if extra_col in region_df.columns:
+                    qty += float(region_df[extra_col].fillna(0).sum())
+
+            if qty > 0:
+                rows.append([region, program_label, qty])
 
     table = pd.DataFrame(rows, columns=["Região", "Programa", "Quantidade"])
+    if table.empty:
+        # Retorna um gráfico vazio para evitar quebra de UI no caso de recorte sem dados.
+        fig = Figure()
+        fig.update_layout(title=f"Programas de Financiamento por Região — {stage_label} (2024)")
+        return fig
 
     fig = px.bar(
         table,
@@ -34,7 +57,7 @@ def getFinancingProgramsByRegionChart(
         y="Quantidade",
         color="Programa",
         barmode="group",
-        title="FIES e PROUNI por Região — Matriculados (2024)",
+        title=f"Programas de Financiamento por Região — {stage_label} (2024)",
         color_discrete_map=PROGRAM_COLORS,
         text_auto=".2s",
     )

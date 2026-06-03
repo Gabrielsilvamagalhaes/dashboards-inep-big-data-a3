@@ -24,7 +24,7 @@ def getTotalCoursesCharts(df: DataFrame) -> CoursesCharts:
             title={"text": "Total de Cursos Cadastrados (Brasil)"},
         )
     )
-    fig_total.update_layout(separators=",.")
+    fig_total.update_layout(separators=",.", height=300)
 
     df_count = df_education.value_counts().reset_index().head(10)
     df_count.columns = ["Curso", "Quantidade"]
