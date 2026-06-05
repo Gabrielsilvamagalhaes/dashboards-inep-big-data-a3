@@ -17,7 +17,7 @@ from pages.finance_programs_page import financialProgramsPage
 from pages.members_page import membersPage
 from pages.national_vision_page import nationalVisionPage
 from pages.students_profile_page import studentsProfilePage
-from services.extract_csv_service import extractCsv
+from services.extract_csv_service import extractCsv, resolve_data_source
 from components.ui_helpers import apply_dark_theme
 
 
@@ -42,7 +42,11 @@ DATA_URL = "https://drive.google.com/file/d/1P9Hehhe8mh2cE44AYw081M_Fhp0DPWYX/vi
 # DATA_URL = _root_url / "samples" / "MICRODADOS_CADASTRO_CURSOS_2024.csv"
 # DATA_URL = "https://drive.google.com/file/d/<ID_DO_PARQUET>/view?usp=sharing"
 
-df = extractCsv(str(DATA_URL))
+try:
+    df = extractCsv(resolve_data_source(str(DATA_URL)))
+except ConnectionError as exc:
+    st.error(str(exc))
+    st.stop()
 
 # Utilizando labmda para as funções serem chamadas apenas quando o streamlit iniciar
 pg = st.navigation(

@@ -62,6 +62,7 @@ _STATIC_COLUMNS = frozenset(
 _CATEGORY_COLUMNS = frozenset(
     {
         "NO_REGIAO",
+        "NO_CURSO",
         "NO_UF",
         "NO_CINE_ROTULO",
         "NO_CINE_AREA_GERAL",

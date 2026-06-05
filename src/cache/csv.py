@@ -6,6 +6,9 @@ import pandas as pd
 
 from utils.logger import displayLog
 
+# Incrementar quando mudar tipos/colunas do dataframe em cache.
+_CACHE_VERSION = "v2"
+
 
 def _resolve_project_root() -> Path:
     return Path(__file__).resolve().parent.parent.parent
@@ -31,7 +34,7 @@ def _build_cache_key(source: str | Path) -> str:
 def _build_cache_file_path(source: str | Path) -> Path:
     cache_dir = get_cache_dir()
     cache_key = _build_cache_key(source)
-    return cache_dir / f"{cache_key}.parquet"
+    return cache_dir / f"{cache_key}_{_CACHE_VERSION}.parquet"
 
 
 def _legacy_pickle_path(source: str | Path) -> Path:

@@ -1,4 +1,5 @@
 import gc
+import os
 from pathlib import Path
 
 import pandas as pd
@@ -29,6 +30,100 @@ CSV_SEP = ";"
 CSV_ENCODING = "iso-8859-1"
 # Chunks menores reduzem o pico de RAM no Streamlit Cloud (tier gratuito ~1 GB).
 CHUNK_SIZE = 25_000
+
+_LOCAL_CSV_NAME = "MICRODADOS_CADASTRO_CURSOS_2024.csv"
+_LOCAL_PARQUET_NAME = "microdados_inep_2024.parquet"
+
+
+def _project_root() -> Path:
+    return Path(__file__).resolve().parent.parent.parent
+
+
+def _extract_drive_file_id(path: str) -> str | None:
+    parsed_source = urlparse(path)
+    if "drive.google.com" not in parsed_source.netloc:
+        return None
+
+    query_params = parse_qs(parsed_source.query)
+    if "/file/d/" in parsed_source.path:
+        try:
+            return parsed_source.path.split("/file/d/")[1].split("/")[0]
+        except IndexError:
+            return None
+    if "id" in query_params and query_params["id"]:
+        return query_params["id"][0]
+    return None
+
+
+def _local_data_candidates(preferred: str) -> list[Path]:
+    root = _project_root()
+    cache_dir = root / "cache"
+    candidates: list[Path] = []
+
+    env_path = os.environ.get("INEP_DATA_PATH", "").strip()
+    if env_path:
+        candidates.append(Path(env_path))
+
+    candidates.extend(
+        [
+            root / "samples" / _LOCAL_CSV_NAME,
+            cache_dir / _LOCAL_PARQUET_NAME,
+        ]
+    )
+
+    file_id = _extract_drive_file_id(preferred)
+    if file_id:
+        candidates.extend(
+            [
+                cache_dir / f"{file_id}.csv",
+                cache_dir / f"{file_id}.parquet",
+            ]
+        )
+
+    seen: set[Path] = set()
+    existing: list[Path] = []
+    for candidate in candidates:
+        resolved = candidate.resolve()
+        if resolved in seen or not resolved.exists():
+            continue
+        seen.add(resolved)
+        existing.append(resolved)
+    return existing
+
+
+def resolve_data_source(preferred: str) -> str:
+    """
+    Prioriza arquivo local/cache quando existir (dev offline).
+    No Streamlit Cloud, normalmente só há URL remota e o download segue.
+    """
+    local_sources = _local_data_candidates(preferred)
+    if local_sources:
+        chosen = local_sources[0]
+        displayLog(f"Usando fonte local (sem download): {chosen}")
+        return str(chosen)
+    return preferred
+
+
+def _download_help_message(preferred: str, error: Exception) -> str:
+    root = _project_root()
+    local_sources = _local_data_candidates(preferred)
+    lines = [
+        "Não foi possível baixar o arquivo do Google Drive.",
+        f"Detalhe: {error}",
+        "",
+        "Alternativas para rodar localmente:",
+        f"1. Baixe o CSV do INEP e salve em: {root / 'samples' / _LOCAL_CSV_NAME}",
+        f"2. Ou gere um Parquet e salve em: {root / 'cache' / _LOCAL_PARQUET_NAME}",
+        "3. Ou defina a variável de ambiente INEP_DATA_PATH com o caminho do arquivo",
+        "",
+        "Verifique também firewall, proxy, VPN ou conexão com a internet.",
+    ]
+    if local_sources:
+        lines.insert(
+            4,
+            f"Arquivos locais detectados (use um deles): {', '.join(str(p) for p in local_sources)}",
+        )
+    return "\n".join(lines)
 
 
 def _normalize_csv_source(path: str) -> str:
@@ -86,7 +181,16 @@ def _download_drive_file_to_cache(source_url: str, *, suffix: str) -> str:
         return str(target_file_path)
 
     displayLog(f"Baixando {suffix} do Google Drive com gdown")
-    gdown.download(source_url, str(target_file_path), quiet=False)
+    try:
+        gdown.download(source_url, str(target_file_path), quiet=False)
+    except Exception as exc:
+        local_sources = _local_data_candidates(source_url)
+        if local_sources:
+            displayLog(
+                f"Download falhou; usando arquivo local: {local_sources[0]}"
+            )
+            return str(local_sources[0])
+        raise ConnectionError(_download_help_message(source_url, exc)) from exc
     return str(target_file_path)
 
 
@@ -255,8 +359,9 @@ def extractCsv(path: str) -> pd.DataFrame:
     if cached_dataframe is not None:
         return cached_dataframe
 
-    read_source = normalized_source
-    if _is_google_drive_url(normalized_source):
+    resolved_source = resolve_data_source(path)
+    read_source = resolved_source
+    if _is_google_drive_url(normalized_source) and not Path(resolved_source).exists():
         suffix = ".parquet" if _is_parquet_source(normalized_source) else ".csv"
         read_source = _download_drive_file_to_cache(normalized_source, suffix=suffix)
 

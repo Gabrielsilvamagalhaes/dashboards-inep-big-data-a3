@@ -27,6 +27,7 @@ from services.extract_csv_service import (  # noqa: E402
     _load_csv_all_rows,
     _normalize_csv_source,
     _optimize_dataframe,
+    resolve_data_source,
 )
 import pandas as pd  # noqa: E402
 
@@ -46,9 +47,17 @@ def main() -> None:
     if not args.csv and not args.url:
         parser.error("Informe --csv ou --url")
 
-    source = str(args.csv) if args.csv else _normalize_csv_source(args.url)
-    if args.url and _is_google_drive_url(source) and not _is_parquet_source(source):
-        source = _download_drive_file_to_cache(source, suffix=".csv")
+    if args.csv:
+        source = str(args.csv)
+    else:
+        normalized_url = _normalize_csv_source(args.url)
+        source = resolve_data_source(normalized_url)
+        if (
+            _is_google_drive_url(normalized_url)
+            and not _is_parquet_source(source)
+            and not Path(source).exists()
+        ):
+            source = _download_drive_file_to_cache(normalized_url, suffix=".csv")
 
     if _is_parquet_source(source):
         df = pd.read_parquet(source)

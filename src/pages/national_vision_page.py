@@ -117,13 +117,13 @@ def nationalVisionPage(df: DataFrame):
 
     total_courses_graphic = result.get("total_courses_graphic")
 
-    institutions_indicator = getTotalStudentsInstitutionsChart(df_filtered_by_region)
-    st.plotly_chart(apply_plotly_dark(institutions_indicator), use_container_width=True)
-
     c3, c4 = st.columns(2, gap="large")
     with c3:
-        st.plotly_chart(apply_plotly_dark(total_courses_graphic), use_container_width=True)
+        institutions_indicator = getTotalStudentsInstitutionsChart(df_filtered_by_region)
+        st.plotly_chart(apply_plotly_dark(institutions_indicator), use_container_width=True)
 
     with c4:
         total_courses_indicator = result.get("total_courses_indicator")
         st.plotly_chart(apply_plotly_dark(total_courses_indicator), use_container_width=True)
+
+    st.plotly_chart(apply_plotly_dark(total_courses_graphic), use_container_width=True)
