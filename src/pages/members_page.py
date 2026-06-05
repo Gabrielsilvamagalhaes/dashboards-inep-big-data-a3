@@ -1,5 +1,7 @@
 import streamlit as st
 
+from components.theme_constants import ThemeMode, get_theme_mode
+
 _MEMBERS = [
     {
         "name": "Gabriel Silva Magalhães",
@@ -16,8 +18,69 @@ _MEMBERS = [
     {"name": "Alexandre", "ra": "12724123381"},
 ]
 
-_PAGE_CSS = """
-<style>
+_DARK_MEMBERS_CSS = """
+  .members-shell {
+    background: linear-gradient(160deg, #1a2234 0%, #243049 45%, #1c2640 100%);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow:
+      0 18px 40px rgba(0, 0, 0, 0.35),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+  .members-panel h3 { color: #ffffff; }
+  .members-panel .members-accent {
+    background: linear-gradient(90deg, transparent, #7eb8ff, transparent);
+  }
+  .members-panel .members-subtitle { color: rgba(255, 255, 255, 0.72); }
+  .member-divider {
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.22), transparent);
+  }
+  .member-card:hover { background: rgba(255, 255, 255, 0.04); }
+  .member-card h4 { color: #ffffff; }
+  .member-card .member-ra { color: rgba(255, 255, 255, 0.88); }
+  .member-card .member-ra strong { color: #ffffff; }
+  .member-link {
+    text-decoration-color: rgba(255, 255, 255, 0.55);
+    color: #ffffff;
+  }
+  .member-link:hover {
+    color: #b8d9ff;
+    text-decoration-color: #b8d9ff;
+  }
+  .member-link:focus-visible { outline: 2px solid #ffffff; }
+"""
+
+_LIGHT_MEMBERS_CSS = """
+  .members-shell {
+    background: linear-gradient(160deg, #f8f9fb 0%, #eef1f6 45%, #f5f7fa 100%);
+    border: 1px solid rgba(0, 0, 0, 0.10);
+    box-shadow:
+      0 12px 32px rgba(0, 0, 0, 0.08),
+      inset 0 1px 0 rgba(255, 255, 255, 0.90);
+  }
+  .members-panel h3 { color: #262730; }
+  .members-panel .members-accent {
+    background: linear-gradient(90deg, transparent, #2C5E8A, transparent);
+  }
+  .members-panel .members-subtitle { color: rgba(38, 39, 48, 0.72); }
+  .member-divider {
+    background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.12), transparent);
+  }
+  .member-card:hover { background: rgba(0, 0, 0, 0.03); }
+  .member-card h4 { color: #262730; }
+  .member-card .member-ra { color: rgba(38, 39, 48, 0.88); }
+  .member-card .member-ra strong { color: #262730; }
+  .member-link {
+    text-decoration-color: rgba(44, 94, 138, 0.45);
+    color: #2C5E8A;
+  }
+  .member-link:hover {
+    color: #1e4568;
+    text-decoration-color: #1e4568;
+  }
+  .member-link:focus-visible { outline: 2px solid #2C5E8A; }
+"""
+
+_SHARED_MEMBERS_CSS = """
   div[data-testid="stVerticalBlockBorderWrapper"]:has(.members-shell) {
     background: transparent !important;
     border: none !important;
@@ -29,42 +92,28 @@ _PAGE_CSS = """
     padding: 2.25rem 2rem 2rem;
     text-align: center;
     border-radius: 16px;
-    background: linear-gradient(160deg, #1a2234 0%, #243049 45%, #1c2640 100%);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    box-shadow:
-      0 18px 40px rgba(0, 0, 0, 0.35),
-      inset 0 1px 0 rgba(255, 255, 255, 0.08);
   }
   .members-panel h3 {
     margin: 0 0 0.5rem;
     font-size: 1.85rem;
     font-weight: 700;
     letter-spacing: -0.03em;
-    color: #ffffff;
   }
   .members-panel .members-accent {
     width: 3.5rem;
     height: 3px;
     margin: 0 auto 1.1rem;
     border-radius: 999px;
-    background: linear-gradient(90deg, transparent, #7eb8ff, transparent);
   }
   .members-panel .members-subtitle {
     margin: 0 0 1.75rem;
     font-size: 0.98rem;
-    color: rgba(255, 255, 255, 0.72);
     line-height: 1.5;
   }
   .member-divider {
     height: 1px;
     margin: 1.35rem auto;
     max-width: 85%;
-    background: linear-gradient(
-      90deg,
-      transparent,
-      rgba(255, 255, 255, 0.22),
-      transparent
-    );
     border: none;
   }
   .member-card {
@@ -72,26 +121,18 @@ _PAGE_CSS = """
     border-radius: 12px;
     transition: background 0.2s ease;
   }
-  .member-card:hover {
-    background: rgba(255, 255, 255, 0.04);
-  }
   .member-card h4 {
     margin: 0 0 0.45rem;
     font-size: 1.2rem;
     font-weight: 600;
     line-height: 1.4;
-    color: #ffffff;
   }
   .member-card .member-ra {
     margin: 0 0 0.75rem;
     font-size: 0.95rem;
-    color: rgba(255, 255, 255, 0.88);
     letter-spacing: 0.02em;
   }
-  .member-card .member-ra strong {
-    font-weight: 600;
-    color: #ffffff;
-  }
+  .member-card .member-ra strong { font-weight: 600; }
   .member-links {
     display: flex;
     justify-content: center;
@@ -103,23 +144,20 @@ _PAGE_CSS = """
   .member-link {
     text-decoration: underline;
     text-underline-offset: 4px;
-    text-decoration-color: rgba(255, 255, 255, 0.55);
     font-size: 0.92rem;
     font-weight: 500;
-    color: #ffffff;
     transition: color 0.15s ease, text-decoration-color 0.15s ease;
   }
-  .member-link:hover {
-    color: #b8d9ff;
-    text-decoration-color: #b8d9ff;
-  }
   .member-link:focus-visible {
-    outline: 2px solid #ffffff;
     outline-offset: 3px;
     border-radius: 2px;
   }
-</style>
 """
+
+
+def _build_members_css(mode: ThemeMode) -> str:
+    variant = _DARK_MEMBERS_CSS if mode == "dark" else _LIGHT_MEMBERS_CSS
+    return f"<style>{_SHARED_MEMBERS_CSS}{variant}</style>"
 
 
 def _member_card_html(
@@ -148,11 +186,10 @@ def _member_card_html(
 
 
 def membersPage():
-    st.markdown(_PAGE_CSS, unsafe_allow_html=True)
+    st.markdown(_build_members_css(get_theme_mode()), unsafe_allow_html=True)
 
     members_body = ""
-    for index, member in enumerate(_MEMBERS):
-
+    for member in _MEMBERS:
         members_body += _member_card_html(**member)
 
     _, center, _ = st.columns([1, 2, 1])

@@ -2,7 +2,7 @@
 
 Responsável por:
 - configurar o layout;
-- aplicar tema dark consistente;
+- aplicar tema consistente com a preferência do usuário;
 - carregar o CSV;
 - montar a navegação de páginas.
 """
@@ -18,7 +18,7 @@ from pages.members_page import membersPage
 from pages.national_vision_page import nationalVisionPage
 from pages.students_profile_page import studentsProfilePage
 from services.extract_csv_service import extractCsv, resolve_data_source
-from components.ui_helpers import apply_dark_theme
+from components.ui_helpers import apply_app_theme
 
 
 init(autoreset=True)  # Função para inicializar a lib colorama
@@ -29,7 +29,7 @@ st.set_page_config(
 )
 
 # Tema visual deve ser aplicado cedo, antes das páginas renderizarem conteúdo.
-apply_dark_theme()
+apply_app_theme()
 
 _root_url = Path(__file__).resolve().parent.parent
 

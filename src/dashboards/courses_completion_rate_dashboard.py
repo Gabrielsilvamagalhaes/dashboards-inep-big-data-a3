@@ -8,6 +8,7 @@ from dashboards.courses_analytics_constants import (
     MIN_ENROLLMENT_FOR_RATE,
     prepare_courses_summary,
 )
+from components.theme_constants import get_theme_colors, plotly_hoverlabel
 
 CompletionRanking = Literal["highest", "lowest"]
 
@@ -37,6 +38,7 @@ def getCoursesCompletionRateChart(
     ranking: CompletionRanking = "highest",
 ) -> Figure:
     """Top ou bottom cursos por taxa de conclusão (concluintes / matriculados)."""
+    colors = get_theme_colors()
     eligible = _eligible_summary(df, min_enrollment)
     ascending = ranking == "lowest"
     top = (
@@ -57,7 +59,7 @@ def getCoursesCompletionRateChart(
             marker={"color": bar_color, "line": {"width": 0}},
             text=[f"{v:.1f}%" for v in rates],
             textposition="outside",
-            textfont={"size": 11, "color": "#FFFFFF"},
+            textfont={"size": 11, "color": colors.bar_label},
             cliponaxis=False,
             customdata=top[["NO_CINE_ROTULO", "Matriculados", "Concluintes"]].values,
             hovertemplate=(
@@ -83,9 +85,8 @@ def getCoursesCompletionRateChart(
             "xanchor": "center",
             "font": {"size": 15},
         },
-        template="plotly_white",
-        height=max(380, len(top) * 36 + 120),
         margin={"l": 8, "r": 48, "t": 72, "b": 40},
+        height=max(380, len(top) * 36 + 120),
         bargap=0.28,
         separators=",.",
         showlegend=False,
@@ -103,7 +104,7 @@ def getCoursesCompletionRateChart(
             "tickfont": {"size": 11},
             "automargin": True,
         },
-        hoverlabel={"bgcolor": "black", "font_size": 12},
+        hoverlabel=plotly_hoverlabel(font_size=12),
     )
 
     return fig

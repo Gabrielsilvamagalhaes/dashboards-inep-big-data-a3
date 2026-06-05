@@ -7,6 +7,7 @@ from dashboards.courses_analytics_constants import (
     format_br_number,
     prepare_courses_summary,
 )
+from components.theme_constants import plotly_hoverlabel
 
 
 def getCoursesTopMatriculationsChart(df: DataFrame, top_n: int = 20) -> Figure:
@@ -30,7 +31,7 @@ def getCoursesTopMatriculationsChart(df: DataFrame, top_n: int = 20) -> Figure:
         height=max(500, top_n * 28),
         margin={"r": 72},
         separators=",.",
-        hoverlabel={"bgcolor": "black", "font_size": 13},
+        hoverlabel=plotly_hoverlabel(font_size=13),
     )
     fig.update_xaxes(range=[0, top["Matriculados"].max() * 1.18])
     fig.update_traces(

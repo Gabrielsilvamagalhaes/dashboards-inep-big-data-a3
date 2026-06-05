@@ -58,6 +58,6 @@ def getStudentsComparisonByRaceChart(df: DataFrame) -> Figure:
         text_auto=",.0f",
     )
 
-    fig.update_layout(template="plotly_dark", title_x=0.5, height=650, separators=",.")
+    fig.update_layout(title_x=0.5, height=650, separators=",.")
 
     return fig

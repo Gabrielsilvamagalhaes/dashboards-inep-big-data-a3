@@ -2,9 +2,9 @@
 Helpers de UI reutilizáveis para deixar todas as páginas mais profissionais.
 
 Objetivos:
-- aplicar um tema escuro consistente (sem depender do tema do usuário);
+- aplicar um tema consistente com a preferência do usuário (claro ou escuro);
 - padronizar cabeçalhos (título + subtítulo);
-- garantir que os gráficos Plotly usem `plotly_dark` com boa legibilidade.
+- garantir que os gráficos Plotly usem template e cores legíveis no tema ativo.
 """
 
 from __future__ import annotations
@@ -14,55 +14,62 @@ from typing import Optional
 import streamlit as st
 from plotly.graph_objs import Figure
 
+from components.theme_constants import ThemeColors, get_theme_colors
 
-_GLOBAL_DARK_CSS = """
+
+def _build_global_css(colors: ThemeColors) -> str:
+    return f"""
 <style>
-/* Fundo e texto do app para consistência visual (tema escuro "hard") */
-body {
-  background-color: #0b0f17;
-  color: #e8eaf0;
-}
+/* Fundo e texto do app para consistência visual */
+body {{
+  background-color: {colors.bg};
+  color: {colors.text};
+}}
 
 /* Container principal do Streamlit */
-div[data-testid="stAppViewContainer"] {
-  background-color: #0b0f17;
-  color: #e8eaf0;
-}
+div[data-testid="stAppViewContainer"] {{
+  background-color: {colors.bg};
+  color: {colors.text};
+}}
 
 /* Cabeçalhos do Streamlit */
-h1, h2, h3, h4, h5 {
-  color: #e8eaf0 !important;
-}
+h1, h2, h3, h4, h5 {{
+  color: {colors.text} !important;
+}}
 
 /* Divisores suaves */
-.a3-section-divider {
+.a3-section-divider {{
   border: none;
   height: 1px;
-  background: rgba(255, 255, 255, 0.10);
+  background: {colors.divider};
   margin: 1rem 0;
-}
+}}
 
 /* Cards de insight (texto curto) */
-.a3-insight {
+.a3-insight {{
   border-radius: 12px;
   padding: 0.9rem 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(255, 255, 255, 0.04);
-}
+  border: 1px solid {colors.card_border};
+  background: {colors.card_bg};
+}}
 </style>
 """
 
 
-def apply_dark_theme() -> None:
-    """Aplica um CSS global para consistência visual no tema escuro."""
+def apply_app_theme() -> None:
+    """Aplica CSS global alinhado ao tema ativo (claro ou escuro)."""
 
-    # Obs: `unsafe_allow_html=True` é necessário para injetar CSS na página.
-    st.markdown(_GLOBAL_DARK_CSS, unsafe_allow_html=True)
+    colors = get_theme_colors()
+    st.markdown(_build_global_css(colors), unsafe_allow_html=True)
+
+
+apply_dark_theme = apply_app_theme
 
 
 def render_page_header(title: str, subtitle: Optional[str] = None) -> None:
     """Renderiza um cabeçalho padronizado para a página."""
 
+    colors = get_theme_colors()
     st.markdown(
         f"""
         <div style="margin-top: 0.2rem; margin-bottom: 0.5rem;">
@@ -70,7 +77,7 @@ def render_page_header(title: str, subtitle: Optional[str] = None) -> None:
             {title}
           </h2>
           {(
-              f"<p style='text-align:center; color: rgba(255,255,255,0.72); margin:0;'>{subtitle}</p>"
+              f"<p style='text-align:center; color: {colors.text_muted}; margin:0;'>{subtitle}</p>"
               if subtitle
               else ""
           )}
@@ -94,14 +101,13 @@ def render_insight(text: str) -> None:
 
 def apply_plotly_dark(fig: Figure) -> Figure:
     """
-    Garante que o gráfico Plotly fique legível em fundo escuro.
+    Garante que o gráfico Plotly fique legível no tema ativo (claro ou escuro).
 
     Alguns dashboards já setam template; mesmo assim, atualizamos para manter
     consistência entre todos os gráficos.
     """
 
-    # `update_layout` é seguro para Figuras Plotly.
-    fig.update_layout(template="plotly_dark")
-    # Reforço de cor de fonte para alguns temas que não herdam bem.
-    fig.update_layout(font={"color": "#e8eaf0"})
+    colors = get_theme_colors()
+    fig.update_layout(template=colors.plotly_template)
+    fig.update_layout(font={"color": colors.plotly_font})
     return fig

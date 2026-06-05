@@ -19,7 +19,7 @@ def getStudentsDistributionByDisabilityChart(df: DataFrame) -> Figure:
         )
     )
 
-    fig.update_layout(template="plotly_dark", height=400, separators=",.")
+    fig.update_layout(height=400, separators=",.")
 
     return fig
 
@@ -51,7 +51,6 @@ def getStudentsComparisonByDisabilityChart(df: DataFrame) -> Figure:
     )
 
     fig.update_layout(
-        template="plotly_dark",
         title_x=0.5,
         height=600,
         separators=",.",

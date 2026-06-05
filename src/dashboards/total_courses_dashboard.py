@@ -6,6 +6,7 @@ import plotly.express as px
 from plotly.graph_objs import Figure
 
 from dashboards.courses_analytics_constants import CHART_COLORS, COURSE_COLUMN, format_br_number
+from components.theme_constants import get_theme_colors, plotly_hoverlabel
 
 _COURSE_NAME_COLUMNS = (COURSE_COLUMN, "NO_CURSO")
 
@@ -37,6 +38,7 @@ def _course_name_series(df: DataFrame) -> Series:
 
 def getTotalCoursesCharts(df: DataFrame) -> CoursesCharts:
     """Indicador e top 10 de cursos cadastrados no recorte."""
+    colors = get_theme_colors()
     course_names = _course_name_series(df)
     total_courses = int(course_names.nunique())
 
@@ -67,7 +69,7 @@ def getTotalCoursesCharts(df: DataFrame) -> CoursesCharts:
                     "x": 0.5,
                     "y": 0.5,
                     "showarrow": False,
-                    "font": {"size": 14, "color": "#e8eaf0"},
+                    "font": {"size": 14, "color": colors.plotly_font},
                 }
             ],
             height=400,
@@ -88,21 +90,21 @@ def getTotalCoursesCharts(df: DataFrame) -> CoursesCharts:
             "categoryorder": "total ascending",
             "title": "Curso",
             "type": "category",
-            "tickfont": {"size": 11, "color": "#e8eaf0"},
+            "tickfont": {"size": 11, "color": colors.plotly_font},
         },
         xaxis_title="Quantidade de registros",
         showlegend=False,
         height=max(500, len(df_count) * 48),
         margin={"l": 12, "r": 48, "t": 56, "b": 40},
         separators=",.",
-        hoverlabel={"bgcolor": "black", "font_size": 13},
+        hoverlabel=plotly_hoverlabel(font_size=13),
     )
     fig.update_xaxes(range=[0, df_count["Quantidade"].max() * 1.18])
     fig.update_traces(
         marker_color=CHART_COLORS["matriculados"],
         text=[format_br_number(v) for v in df_count["Quantidade"]],
         textposition="outside",
-        textfont={"size": 12, "color": "#FFFFFF"},
+        textfont={"size": 12, "color": colors.bar_label},
         cliponaxis=False,
         hovertemplate="<b>%{y}</b><br>Registros: %{x:,.0f}<extra></extra>",
     )
