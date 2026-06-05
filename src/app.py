@@ -32,11 +32,17 @@ st.set_page_config(
 apply_dark_theme()
 
 _root_url = Path(__file__).resolve().parent.parent
-CSV_PATH = _root_url / "samples" / "MICRODADOS_CADASTRO_CURSOS_2024.csv"
 
-CSV_PATH = "https://drive.google.com/file/d/1P9Hehhe8mh2cE44AYw081M_Fhp0DPWYX/view?usp=sharing"
+# Fonte dos dados (escolha UMA):
+# 1) Parquet no Drive — recomendado para Streamlit Cloud gratuito (~1 GB RAM).
+#    Gere com: python scripts/prepare_parquet.py --url "<link_csv>" --out cache/dados.parquet
+# 2) CSV no Drive — funciona localmente; no deploy gratuito pode estourar RAM na 1ª carga.
+# 3) CSV local em samples/ (não versionado por tamanho).
+DATA_URL = "https://drive.google.com/file/d/1P9Hehhe8mh2cE44AYw081M_Fhp0DPWYX/view?usp=sharing"
+# DATA_URL = _root_url / "samples" / "MICRODADOS_CADASTRO_CURSOS_2024.csv"
+# DATA_URL = "https://drive.google.com/file/d/<ID_DO_PARQUET>/view?usp=sharing"
 
-df = extractCsv(CSV_PATH)
+df = extractCsv(str(DATA_URL))
 
 # Utilizando labmda para as funções serem chamadas apenas quando o streamlit iniciar
 pg = st.navigation(
