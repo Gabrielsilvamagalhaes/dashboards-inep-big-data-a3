@@ -105,21 +105,23 @@ def _resolve_usecols(source: str) -> list[str]:
     return usecols
 
 
-def _build_read_dtypes(usecols: list[str]) -> dict[str, str]:
-    """Tipos explícitos evitam inferência de float64 durante o parse do CSV."""
-    category_cols = get_category_columns()
-    id_cols = get_integer_id_columns()
-    dtypes: dict[str, str] = {}
+def _read_csv_chunks(source: str, usecols: list[str]):
+    """
+    Lê o CSV em blocos sem dtype fixo no parse.
 
-    for col in usecols:
-        if col in category_cols:
-            dtypes[col] = "string"
-        elif col in id_cols:
-            dtypes[col] = "Int32"
-        else:
-            dtypes[col] = "float32"
-
-    return dtypes
+    O microdado INEP mistura vazios e tokens inválidos em colunas numéricas;
+    forçar float32/Int32 no read_csv quebra o parser C do pandas.
+    """
+    return pd.read_csv(
+        source,
+        sep=CSV_SEP,
+        encoding=CSV_ENCODING,
+        usecols=usecols,
+        chunksize=CHUNK_SIZE,
+        low_memory=True,
+        na_values=["", " ", "NA", "N/A", "NULL", "-"],
+        keep_default_na=True,
+    )
 
 
 def _optimize_dataframe(df: pd.DataFrame) -> pd.DataFrame:
@@ -137,24 +139,28 @@ def _optimize_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
+def _optimize_chunk_for_staging(df: pd.DataFrame) -> pd.DataFrame:
+    """Otimiza numéricos no staging sem category (evita schema divergente no Parquet)."""
+    category_cols = get_category_columns()
+    id_cols = get_integer_id_columns()
+
+    for col in df.columns:
+        if col in category_cols:
+            df[col] = df[col].astype("string")
+        elif col in id_cols:
+            df[col] = pd.to_numeric(df[col], errors="coerce").astype("Int32")
+        else:
+            df[col] = pd.to_numeric(df[col], errors="coerce", downcast="float")
+
+    return df
+
+
 def _load_csv_chunked(source: str, usecols: list[str]) -> pd.DataFrame:
     """Lê o CSV em blocos para limitar o pico de memória no deploy gratuito."""
-    dtypes = _build_read_dtypes(usecols)
     chunks: list[pd.DataFrame] = []
     total_rows = 0
 
-    for chunk_index, chunk in enumerate(
-        pd.read_csv(
-            source,
-            sep=CSV_SEP,
-            encoding=CSV_ENCODING,
-            usecols=usecols,
-            dtype=dtypes,
-            chunksize=CHUNK_SIZE,
-            low_memory=True,
-        ),
-        start=1,
-    ):
+    for chunk_index, chunk in enumerate(_read_csv_chunks(source, usecols), start=1):
         chunk = _optimize_dataframe(chunk)
         chunks.append(chunk)
         total_rows += len(chunk)
@@ -192,20 +198,8 @@ def _load_csv_via_staging_parquet(source: str, usecols: list[str]) -> pd.DataFra
     total_rows = 0
 
     try:
-        dtypes = _build_read_dtypes(usecols)
-        for chunk_index, chunk in enumerate(
-            pd.read_csv(
-                source,
-                sep=CSV_SEP,
-                encoding=CSV_ENCODING,
-                usecols=usecols,
-                dtype=dtypes,
-                chunksize=CHUNK_SIZE,
-                low_memory=True,
-            ),
-            start=1,
-        ):
-            chunk = _optimize_dataframe(chunk)
+        for chunk_index, chunk in enumerate(_read_csv_chunks(source, usecols), start=1):
+            chunk = _optimize_chunk_for_staging(chunk)
             table = pa.Table.from_pandas(chunk, preserve_index=False)
             if writer is None:
                 writer = pq.ParquetWriter(staging_path, table.schema, compression="snappy")
@@ -224,7 +218,7 @@ def _load_csv_via_staging_parquet(source: str, usecols: list[str]) -> pd.DataFra
     result = pd.read_parquet(staging_path)
     staging_path.unlink(missing_ok=True)
     gc.collect()
-    return result
+    return _optimize_dataframe(result)
 
 
 def _load_csv_all_rows(source: str) -> pd.DataFrame:
