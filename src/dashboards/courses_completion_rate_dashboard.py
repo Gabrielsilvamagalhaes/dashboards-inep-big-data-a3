@@ -57,7 +57,7 @@ def getCoursesCompletionRateChart(
             marker={"color": bar_color, "line": {"width": 0}},
             text=[f"{v:.1f}%" for v in rates],
             textposition="outside",
-            textfont={"size": 11, "color": "#333"},
+            textfont={"size": 11, "color": "#FFFFFF"},
             cliponaxis=False,
             customdata=top[["NO_CINE_ROTULO", "Matriculados", "Concluintes"]].values,
             hovertemplate=(
@@ -103,7 +103,7 @@ def getCoursesCompletionRateChart(
             "tickfont": {"size": 11},
             "automargin": True,
         },
-        hoverlabel={"bgcolor": "white", "font_size": 12},
+        hoverlabel={"bgcolor": "black", "font_size": 12},
     )
 
     return fig

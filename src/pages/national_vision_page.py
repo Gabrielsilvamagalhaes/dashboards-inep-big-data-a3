@@ -64,8 +64,8 @@ def nationalVisionPage(df: DataFrame):
     # Recorte aplicado a todos os KPIs e gráficos.
     df_filtered_by_region = cast(DataFrame, df[df["NO_REGIAO"].isin(select_regions)])
 
-    with st.expander("Ver amostra dos dados (head)"):
-        st.dataframe(df_filtered_by_region.head(30))
+    # with st.expander("Ver amostra dos dados (head)"):
+    #     st.dataframe(df_filtered_by_region.head(30))
 
     # ---------------------------
     # KPIs (fluxo do ensino superior)
@@ -80,7 +80,7 @@ def nationalVisionPage(df: DataFrame):
 
     kpi1, kpi2, kpi3, kpi4 = st.columns(4)
     kpi1.metric(
-        "Ingressantes",
+        "Calouros",
         f"{total_ingressantes:,.0f}".replace(",", "X").replace(".", ",").replace("X", "."),
     )
     kpi2.metric(
@@ -94,6 +94,8 @@ def nationalVisionPage(df: DataFrame):
         "Formandos",
         f"{total_concluintes:,.0f}".replace(",", "X").replace(".", ",").replace("X", "."),
     )
+
+    st.markdown("<hr/>", unsafe_allow_html=True)
 
     # ---------------------------
     # Visuais principais
@@ -115,13 +117,13 @@ def nationalVisionPage(df: DataFrame):
 
     total_courses_graphic = result.get("total_courses_graphic")
 
+    institutions_indicator = getTotalStudentsInstitutionsChart(df_filtered_by_region)
+    st.plotly_chart(apply_plotly_dark(institutions_indicator), use_container_width=True)
+
     c3, c4 = st.columns(2, gap="large")
     with c3:
-        institutions_indicator = getTotalStudentsInstitutionsChart(df_filtered_by_region)
-        st.plotly_chart(apply_plotly_dark(institutions_indicator), use_container_width=True)
+        st.plotly_chart(apply_plotly_dark(total_courses_graphic), use_container_width=True)
 
     with c4:
         total_courses_indicator = result.get("total_courses_indicator")
         st.plotly_chart(apply_plotly_dark(total_courses_indicator), use_container_width=True)
-
-    st.plotly_chart(apply_plotly_dark(total_courses_graphic), use_container_width=True)

@@ -28,6 +28,12 @@ CHART_COLORS = {
 }
 
 
+def format_br_number(value: float, decimals: int = 0) -> str:
+    """Formata número no padrão brasileiro (ex.: 13.000 ou 1.234,56)."""
+    formatted = f"{value:,.{decimals}f}"
+    return formatted.replace(",", "X").replace(".", ",").replace("X", ".")
+
+
 def prepare_courses_summary(df: DataFrame) -> DataFrame:
     """Agrega matrículas, ingressantes e concluintes por rótulo CINE do curso."""
     grouped = (

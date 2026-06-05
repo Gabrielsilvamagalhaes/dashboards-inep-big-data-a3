@@ -31,6 +31,9 @@ FINANCING_PROGRAM_EXTRA: dict[str, list[str]] = {
     "Outros Não Reembolsáveis": ["NRPFIES"],
 }
 
+# Agrupamento usado no gráfico reembolsável x não reembolsável (coerente com share_pie)
+REEMBOLSAVEL_PROGRAM_LABELS = frozenset({"FIES", "Outros Reembolsáveis"})
+
 PROGRAM_COLORS: dict[str, str] = {
     "FIES": "#2C5E8A",
     "PROUNI Integral": "#88398A",

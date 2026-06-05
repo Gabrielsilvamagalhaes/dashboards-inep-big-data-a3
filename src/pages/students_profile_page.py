@@ -20,8 +20,6 @@ from dashboards.total_students_per_disability_dashboard import (
 def studentsProfilePage(df: DataFrame):
     """Página 'Perfil dos Estudantes' com filtro por região e insights textuais."""
 
-    df = df.dropna(subset=["NO_REGIAO"])
-
     render_page_header(
         "Perfil dos Estudantes",
         "Análises por gênero, idade, raça/cor e deficiência (com recorte por região).",
@@ -39,24 +37,24 @@ def studentsProfilePage(df: DataFrame):
     df_filtered = df[df["NO_REGIAO"].isin(select_regions)]
 
     # Insight 1: participação relativa de gênero (base QT_MAT_FEM/MASC).
-    female = float(df_filtered["QT_MAT_FEM"].fillna(0).sum())
-    male = float(df_filtered["QT_MAT_MASC"].fillna(0).sum())
+    female = float(df["QT_MAT_FEM"].fillna(0).sum())
+    male = float(df["QT_MAT_MASC"].fillna(0).sum())
     total_gender = female + male
-    female_share = (female / total_gender * 100) if total_gender > 0 else 0.0
-
-    lead_gender = (
-        "Feminino" if female_share >= 50 else "Masculino"
-    )
-    render_insight(
-        f"No recorte, {lead_gender} lidera a distribuição de matrículas. "
-        f"Feminino: {female_share:.1f}% (QT_MAT_FEM vs. QT_MAT_MASC)."
-    )
 
     # KPIs resumidos para orientar o gestor antes dos gráficos.
     col1, col2, col3 = st.columns(3)
-    col1.metric("Matrículas Femininas", f"{female:,.0f}")
-    col2.metric("Matrículas Masculinas", f"{male:,.0f}")
-    col3.metric("Total (FEM+MASC)", f"{total_gender:,.0f}")
+    col1.metric(
+        "Matrículas Femininas",
+        f"{female:,.0f}".replace(",", "X").replace(".", ",").replace("X", "."),
+    )
+    col2.metric(
+        "Matrículas Masculinas",
+        f"{male:,.0f}".replace(",", "X").replace(".", ",").replace("X", "."),
+    )
+    col3.metric(
+        "Total (FEM+MASC)",
+        f"{total_gender:,.0f}".replace(",", "X").replace(".", ",").replace("X", "."),
+    )
 
     st.markdown("<hr/>", unsafe_allow_html=True)
 
@@ -72,16 +70,15 @@ def studentsProfilePage(df: DataFrame):
         fig_age = result.get("total_students_per_age")
         st.plotly_chart(apply_plotly_dark(fig_age), use_container_width=True)
 
+    fig_race = getStudentsComparisonByRaceChart(df_filtered)
+    st.plotly_chart(apply_plotly_dark(fig_race), use_container_width=True)
+
     row2_a, row2_b = st.columns(2, gap="large")
     with row2_a:
-        fig_race = getStudentsComparisonByRaceChart(df_filtered)
-        st.plotly_chart(apply_plotly_dark(fig_race), use_container_width=True)
-
-    with row2_b:
         fig_def_dist = getStudentsDistributionByDisabilityChart(df_filtered)
         st.plotly_chart(apply_plotly_dark(fig_def_dist), use_container_width=True)
 
-    # Comparativo de deficiência (full width) para manter leitura.
-    fig_def_comp = getStudentsComparisonByDisabilityChart(df_filtered)
-    with st.container(width="stretch"):
+    with row2_b:
+        # Comparativo de deficiência (full width) para manter leitura.
+        fig_def_comp = getStudentsComparisonByDisabilityChart(df_filtered)
         st.plotly_chart(apply_plotly_dark(fig_def_comp), use_container_width=True)
