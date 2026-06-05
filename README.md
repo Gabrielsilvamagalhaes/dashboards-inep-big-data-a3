@@ -4,8 +4,7 @@ Dashboard interativo de **análise de dados e Big Data** sobre o ensino superior
 
 O projeto simula o papel de analistas do Ministério da Educação (MEC), oferecendo indicadores táticos e estratégicos para apoiar a tomada de decisão por gestores públicos, universidades e instituições de ensino.
 
-**Deploy (Streamlit Cloud):** [https://big-data-a3-inep-fmvqeiqi4rvnq6ktebbsvb.streamlit.app](https://big-data-a3-inep-fmvqeiqi4rvnq6ktebbsvb.streamlit.app)
-
+<a href="https://big-data-a3-inep-fmvqeiqi4rvnq6ktebbsvb.streamlit.app](https://big-data-a3-inep-fmvqeiqi4rvnq6ktebbsvb.streamlit.app" target="_blank">**Deploy (Streamlit Cloud)**</a>
 ---
 
 ## Integrantes
@@ -29,7 +28,8 @@ O dashboard permite explorar o cenário do ensino superior brasileiro em quatro 
 | **Programas de Financiamento** | FIES, PROUNI e outras formas de apoio estudantil |
 | **Análise de Cursos** | Demanda por curso, ingressantes, matrículas e taxa de conclusão |
 
-**Fonte de dados:** [Microdados do Censo da Educação Superior 2024](https://www.gov.br/inep/pt-br/acesso-a-informacao/dados-abertos/microdados/censo-da-educacao-superior) — INEP/MEC.
+**Fonte de dados:** <a href="https://www.gov.br/inep/pt-br/acesso-a-informacao/dados-abertos/microdados/censo-da-educacao-superior" target="_blank">Microdados do Censo da Educação Superior 2024</a> — INEP/MEC.
+
 
 Para o escopo completo do trabalho acadêmico, consulte [SCOPE.md](SCOPE.md).
 
@@ -156,9 +156,9 @@ big-data-a3/
 
 ## Links úteis
 
-- **Deploy (Streamlit Cloud):** [big-data-a3-inep](https://big-data-a3-inep-fmvqeiqi4rvnq6ktebbsvb.streamlit.app)
+- **Deploy (Streamlit Cloud):** <a href="https://big-data-a3-inep-fmvqeiqi4rvnq6ktebbsvb.streamlit.app" target="_blank">big-data-a3-inep</a>
 - **Repositório GitHub:** [dashboards-inep-big-data-a3](https://github.com/Gabrielsilvamagalhaes/dashboards-inep-big-data-a3)
-- **Notebook (Google Colab):** [Análise no Colab](https://colab.research.google.com/drive/1YjvgMnjOtm3wrT-GBRvv48UiZZD4rxyw?usp=sharing)
+- **Notebook (Google Colab):** <a href="https://colab.research.google.com/drive/1YjvgMnjOtm3wrT-GBRvv48UiZZD4rxyw?usp=sharing" target="_blank">Análise no Colab</a>
 
 ---
 
